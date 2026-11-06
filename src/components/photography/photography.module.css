@@ -50,3 +50,44 @@
   .gallery .photograph { width: 100%; margin-top: 0 !important; }
   .caption { padding-top: 14px; }
 }
+
+/* Buttons add access to the viewer without changing the approved photo geometry. */
+.photoButton { display: block; width: 100%; margin: 0; border: 0; padding: 0; border-radius: 0; background: transparent; color: inherit; text-align: inherit; line-height: 0; cursor: pointer; appearance: none; }
+.lightbox { position: fixed; inset: 0; width: 100%; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 20px 32px 24px; border: 0; background: var(--canvas); color: var(--ink); overflow: hidden; }
+.lightbox[open] { display: grid; grid-template-rows: auto minmax(0, 1fr) auto; animation: viewerAppear 160ms ease-out; }
+.lightbox::backdrop { background: var(--canvas); }
+.viewerToolbar { display: flex; justify-content: space-between; align-items: center; min-height: 44px; }
+.counter { font-family: var(--font-metadata); font-size: 12px; color: var(--secondary); }
+.viewerControl { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 10px; border: 1px solid var(--rule); border-radius: 3px; background: transparent; color: var(--secondary); cursor: pointer; }
+.viewerControl svg { width: 20px; height: 20px; }
+.viewerControl:hover { color: var(--link); border-color: var(--link); }
+.viewerControl:disabled { opacity: .35; cursor: default; }
+.viewerStage { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; gap: 24px; align-items: center; min-height: 0; padding-block: 16px; }
+.imageWell { position: relative; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; touch-action: pan-y pinch-zoom; }
+.viewerPicture { display: block; width: 100%; height: 100%; opacity: 0; transition: opacity 160ms ease-out; }
+.viewerPicture[data-loaded='true'] { opacity: 1; }
+.viewerImage { display: block; width: 100%; height: 100%; object-fit: contain; user-select: none; }
+.loadStatus { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: var(--secondary); font-size: 14px; text-align: center; pointer-events: none; }
+.loadStatus p { margin: 0; }
+.retry { min-height: 44px; padding: 8px 16px; border: 1px solid var(--control-border); border-radius: 3px; color: var(--link); background: transparent; pointer-events: auto; cursor: pointer; }
+.viewerCaption { max-height: 20dvh; padding: 8px 72px 0; overflow-y: auto; text-align: center; overscroll-behavior: contain; }
+.viewerCaption:focus-visible { outline: 2px solid var(--link); outline-offset: -2px; }
+.viewerCaption p { margin: 0; }
+.viewerCaption p + p { margin-top: 5px; }
+.viewerTitle { font-size: 15px; font-weight: 500; line-height: 1.5; }
+.viewerMetadata { font-family: var(--font-metadata); color: var(--secondary); font-size: 11px; line-height: 1.8; }
+.viewerDescription { max-width: 720px; margin-inline: auto !important; font-size: 13px; color: var(--secondary); line-height: 1.7; }
+.viewerCredit { font-size: 11px; color: var(--secondary); line-height: 1.8; }
+@keyframes viewerAppear { from { opacity: 0; } to { opacity: 1; } }
+@media (max-width: 640px) {
+  .lightbox { padding: max(12px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); }
+  .viewerStage { grid-template-columns: 44px minmax(0, 1fr) 44px; grid-template-rows: minmax(0, 1fr) 44px; column-gap: 12px; row-gap: 16px; padding-block: 12px; }
+  .imageWell { grid-column: 1 / -1; grid-row: 1; }
+  .viewerStage > button:first-child { grid-column: 1; grid-row: 2; }
+  .viewerStage > button:last-child { grid-column: 3; grid-row: 2; }
+  .viewerCaption { padding: 4px 0 0; max-height: 24dvh; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lightbox[open] { animation: none; }
+  .viewerPicture { transition: none; }
+}

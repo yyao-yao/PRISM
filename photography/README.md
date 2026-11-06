@@ -1,8 +1,8 @@
-# Photography — Stage 1 foundation
+# Photography — editorial gallery and lightbox
 
-The gallery is available directly at `/photography/`. This pilot intentionally
-adds no navigation link, lightbox, image-click behavior, or gallery animation.
-It reuses PRISM's approved academic canvas, theme provider, navigation and footer.
+The gallery is available directly at `/photography/`. Stage 2 adds an immersive
+lightbox while preserving the approved Stage 1 gallery. Navigation integration
+remains deferred. It reuses PRISM's approved academic canvas, theme provider, navigation and footer.
 Gallery CSS is isolated in `src/components/photography/photography.module.css`.
 
 ## Review locally
@@ -41,7 +41,7 @@ Only `id`, `src`, and nonempty `alt` are required. `src` is relative to
 `photography/sources/`; nested directories are supported. IDs must be unique,
 using lowercase letters/digits separated by hyphens. Dates are display strings;
 no date or location is inferred from an image. Collections are stored as metadata
-for future organization; Stage 1 displays the file's order without filtering or
+for future organization; the gallery displays the file's order without filtering or
 sorting by collection.
 
 3. Move entire photo entries to reorder them. Remove an entry to remove it from
@@ -81,4 +81,28 @@ Titles/alt text are descriptive pilot labels, not asserted original titles.
 
 Actual browser screenshots and verification notes are in
 [previews/photography-stage1](../previews/photography-stage1/README.md).
-The lightbox and navigation integration await separate approval.
+Stage 2 lightbox screenshots and checks are in
+[previews/photography-stage2](../previews/photography-stage2/README.md).
+Navigation integration awaits separate approval.
+
+## Lightbox controls
+
+Click a photograph, or focus its button and press Enter/Space. Previous/next
+buttons and left/right arrow keys move through the collection, wrapping at the
+ends. Horizontal touch swipes also navigate; vertical scrolling gestures, short
+movements, canceled gestures, and multitouch do not change photographs.
+
+Escape or the Close button exits. The native modal makes the rest of the page
+inert, cycles keyboard focus within its controls, locks background scrolling,
+and restores the originally activated photograph and scroll position on close.
+Long descriptions can be focused and scrolled within the caption area.
+
+The viewer fits the complete image using `object-fit: contain`. It loads the
+largest prepared local variant, waits for image decoding, and uses a short opacity
+fade. Loading and failure feedback include Retry; navigation and closing remain
+available when an image fails. There is no slideshow, zoom effect, or autoplay.
+
+The dialog inherits PRISM's Light/Dark/System palette and responds to live OS
+theme changes in System mode. Reduced motion removes the entry and image fades.
+Only available metadata is shown; source credits and the placeholder notice stay
+in the gallery. No photo data or sample image was changed for Stage 2.
