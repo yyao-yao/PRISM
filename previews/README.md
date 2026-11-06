@@ -30,6 +30,8 @@ Ten small blue outline symbols (8–13 px) include four-point stars, sparkles, d
 
 `animateSignals.ts` drives real Web Animations in both React and the standalone HTML. Every 11–23-second brightness cycle picks new timing offsets, intensity, and duration independently, so the twinkle does not repeat a fixed synchronized pattern. Only two star shapes may briefly glint more brightly, with a soft three-pixel glow. Separate 21–35-second CSS clocks add tiny positional drift, 0.96–1.03 scaling, and gentle -4 to 5 degree rotation. The same blue theme token supplies the light/dark color.
 
+Each symbol now also has an independent **4.6–7.2-second breathing cycle in both light and dark modes**. This nested SVG animation changes opacity only between 0.96 and 1, scale between 0.99 and 1.016, and translation by less than a pixel. It composes with the existing drift rather than replacing it, and picks new duration and phase offsets each cycle. The original outer brightness/glow keyframes, colors, layout positions, shapes, and theme-switch behavior are unchanged, so breathing never boosts the existing brightness.
+
 The symbols are non-interactive and hidden from assistive technology. Reduced motion cancels their brightness animations and disables drift, leaving static faint markers. Brightness animations also pause while the document is hidden, restart when visible, and are canceled on entry/replay teardown. Browsers without Web Animations retain static markers.
 
 ## Source changes
@@ -47,8 +49,10 @@ Existing content, academic page renderers, navigation, and deployment configurat
 
 Checks exercise the actual extracted engine: original draw/sampling/spring preservation; independent outward scattering; slower versus faster strokes; trailing-edge asymmetry; sparse swept-path coverage; stationary settling; coalesced input; bounded history; reduced motion, touch, visibility and resize handling; cleanup; narrow canvases; and settling at 30/60/120 Hz. Tests use simulated and native canvas contexts, not browser rendering.
 
-The brightness-animation tests verify ten live animations with distinct timing, changing subsequent cycles, at most two glinting stars, smooth ordered keyframes, reduced-motion/visibility cancellation, restart, and cleanup. The standalone script passes JavaScript syntax checks; both particle and symbol engines match the React source.
+The earlier brightness-animation tests verify ten live animations with distinct timing, changing subsequent cycles, at most two glinting stars, smooth ordered keyframes, reduced-motion/visibility cancellation, restart, and cleanup. The standalone script passes JavaScript syntax checks; both particle and symbol engines match the React source.
 
-Not verified: browser rendering and the Next.js build. The supported browser tool was unavailable. Dependency installation was blocked by the execution environment's configured proxy; `npm run build` could not find Next.js. These checks remain pending.
+Breathing verification was run in actual headless Chromium against the standalone HTML served locally on loopback. In both light and dark modes, all ten SVG breathing animations were running and their computed opacity, scale and translation changed over 2.1 seconds. The test also verified unchanged theme colors and existing CSS drift, uninterrupted animations across theme switching, renewal into subsequent cycles, entry/replay cleanup and restart, static reduced-motion behavior in both themes, narrow/mobile layout, and zero browser script errors. The React helper and the HTML helper are identical after TypeScript removal; the HTML outside that helper is unchanged from the previous commit.
+
+The Next.js build remains unverified. Dependency installation was previously blocked by the execution environment's configured proxy; Next.js was not installed. No particle or other visual code was changed in this breathing-only revision.
 
 This branch is for review. No deployment or merge is included.
