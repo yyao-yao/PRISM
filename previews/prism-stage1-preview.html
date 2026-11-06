@@ -97,11 +97,58 @@
 }
 @media (prefers-reduced-motion: reduce) { .floating { animation: none; }.entry { transition: none; } }
 
+/* A sparse, non-interactive constellation. Separate opacity and drift clocks
+   give each marker a quiet, independent rhythm without continuous spinning. */
+.signals { position: absolute; inset: 0; pointer-events: none; }
+.signal { position: absolute; width: 11px; height: 11px; color: var(--portal-blue); opacity: .28; animation: signalTwinkle var(--twinkle) ease-in-out var(--phase) infinite; }
+.signal svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; transform-origin: center; animation: signalDrift var(--drift) ease-in-out var(--phase) infinite alternate; }
+.signal:nth-child(1) { left: 19%; top: 21%; --twinkle: 13.7s; --drift: 23s; --phase: -4.1s; }
+.signal:nth-child(2) { right: 18%; top: 23%; width: 9px; height: 9px; --twinkle: 18.3s; --drift: 29s; --phase: -12.7s; }
+.signal:nth-child(3) { left: 3.2%; top: 48%; width: 8px; height: 8px; --twinkle: 16.1s; --drift: 21s; --phase: -8.9s; }
+.signal:nth-child(4) { right: 3.5%; top: 53%; width: 9px; height: 9px; --twinkle: 21.7s; --drift: 31s; --phase: -16.3s; }
+.signal:nth-child(5) { left: 25%; bottom: 16%; width: 12px; height: 12px; --twinkle: 19.9s; --drift: 27s; --phase: -6.7s; }
+.signal:nth-child(6) { right: 24%; bottom: 15%; width: 10px; height: 10px; --twinkle: 15.3s; --drift: 25s; --phase: -11.1s; }
+@keyframes signalTwinkle {
+  0%, 100% { opacity: .17; }
+  19% { opacity: .34; }
+  37% { opacity: .22; }
+  53% { opacity: .46; }
+  71% { opacity: .25; }
+  87% { opacity: .32; }
+}
+@keyframes signalDrift {
+  from { transform: translate(-1px, 1px) scale(.96) rotate(-4deg); }
+  to { transform: translate(1px, -2px) scale(1.03) rotate(5deg); }
+}
+@media (max-width: 700px) {
+  .signal:nth-child(1) { left: 24%; top: 19%; }
+  .signal:nth-child(2) { right: 19%; top: 22%; }
+  .signal:nth-child(3), .signal:nth-child(4) { display: none; }
+  .signal:nth-child(5) { left: 29%; bottom: 16%; }
+  .signal:nth-child(6) { right: 25%; bottom: 18%; }
+}
+@media (max-height: 650px) and (min-width: 701px) {
+  .signal:nth-child(1), .signal:nth-child(2) { top: 20%; }
+  .signal:nth-child(5), .signal:nth-child(6) { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .signal { animation: none; opacity: .25; }
+  .signal svg { animation: none; transform: none; }
+}
+
 .preview-label{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:101;font:9px/1.5 monospace;text-align:center;color:var(--portal-muted,#68758b);white-space:nowrap;pointer-events:none}.dark .preview-label{color:#8996aa}
 .review-page{min-height:100svh;display:grid;place-items:center;padding:32px;font:16px/1.7 Arial,sans-serif;color:#243148;background:#f5f6f8}.dark .review-page{background:#0b1019;color:#dce5f2}.review-card{max-width:560px}.review-card button{padding:14px 20px;cursor:pointer}.review-card small{font-family:monospace;color:#3678e8}.hidden{display:none!important}
 </style></head><body>
-<div class="review-page hidden" id="review-page"><div class="review-card"><small>STANDALONE DESIGN PREVIEW / STAGE 1</small><h1>Entry interaction complete.</h1><p>In the PRISM implementation, this button reveals the original academic homepage immediately. This standalone file contains only the portal design and particle interactions.</p><p>The two-panel door animation is reserved for Stage 2. Audio is not included.</p><button id="replay" type="button">↶ Replay portal</button></div></div>
+<div class="review-page hidden" id="review-page"><div class="review-card"><small>STANDALONE DESIGN PREVIEW / STAGE 1.1</small><h1>Entry interaction complete.</h1><p>In the PRISM implementation, this button reveals the original academic homepage immediately. This standalone file contains only the portal design and particle interactions.</p><p>The two-panel door animation is reserved for Stage 2. Audio is not included.</p><button id="replay" type="button">↶ Replay portal</button></div></div>
 <section class="portal" id="portal" role="dialog" aria-modal="true" aria-labelledby="portal-title">
+<div class="signals" aria-hidden="true">
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="M8 1.5 9.5 6.5 14.5 8 9.5 9.5 8 14.5 6.5 9.5 1.5 8 6.5 6.5Z" /></svg></span>
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="m8 2 4.5 6L8 14 3.5 8Z" /></svg></span>
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" /></svg></span>
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="m8 3 5.5 10h-11Z" /></svg></span>
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="M8 8C1-1 15-1 8 8c9-7 9 7 0 0 7 9-7 9 0 0-9 7-9-7 0 0Z" /></svg></span>
+        <span class="signal"><svg viewBox="0 0 16 16"><path d="M8 2v12M2.8 5l10.4 6M2.8 11l10.4-6" /></svg></span>
+      </div>
 <header class="header"><div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span><span class="muted">PERSONAL INTERFACE</span></div><div class="themes" role="group" aria-label="Color theme"><button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button></div></header>
 <div class="coordinates" aria-hidden="true"><span>INDEX — 001</span><span>EST. / ACADEMIC SPACE</span></div>
 <div class="content"><p class="eyebrow"><span class="statusDot"></span>A SMALL POINT OF ENTRY</p><h1 id="portal-title" class="srOnly">Yao Yao — academic website entrance</h1>
@@ -112,7 +159,7 @@
 <p class="hint">MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p></div>
 <div class="floating floatOne" aria-hidden="true"><i></i> FIELD / ACTIVE</div><div class="floating floatTwo" aria-hidden="true"><span class="cross">+</span> RESTORING EQUILIBRIUM</div><div class="orbit" aria-hidden="true"><span></span></div>
 <footer class="footer"><span><span class="statusDot"></span> SYSTEM READY</span><span class="footerMiddle">RESEARCH · THOUGHT · EXPLORATION</span><span>PRISM <span class="blue">/</span> 01</span></footer>
-</section><div class="preview-label" id="preview-label">STANDALONE VISUAL PREVIEW · STAGE 1<br>Local file · no deployment · no audio</div>
+</section><div class="preview-label" id="preview-label">STANDALONE VISUAL PREVIEW · STAGE 1.1<br>Local file · no deployment · no audio</div>
 <script>
 const canvas={current:document.getElementById('particles')};
 const setReady=ready=>document.getElementById('fallback').classList.toggle('hidden',ready);
@@ -127,9 +174,17 @@ function setup(){
     let particles             = [];
     let width = 0;
     let height = 0;
+    let cell = 14;
+    let columns = 0;
+    let rows = 0;
+    let fieldX = new Float32Array(0);
+    let fieldY = new Float32Array(0);
     let frame = 0;
     let lastTime = 0;
-    let pointer                                  = null;
+    let pointer                       = null;
+    let wakes         = [];
+    const wakeLifetime = 240;
+    const maxWakes = 12;
     let ink = '#243148';
     let accent = '#3678e8';
 
@@ -156,7 +211,14 @@ function setup(){
       const rect = element.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
+      pointer = null;
+      wakes = [];
       if (!width || !height) return;
+      cell = Math.max(10, Math.min(18, width / 70));
+      columns = Math.ceil(width / cell) + 1;
+      rows = Math.ceil(height / cell) + 1;
+      fieldX = new Float32Array(columns * rows);
+      fieldY = new Float32Array(columns * rows);
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       element.width = Math.round(width * ratio);
       element.height = Math.round(height * ratio);
@@ -188,43 +250,155 @@ function setup(){
       }
       colors();
       setReady(true);
+      start();
     };
 
     const animate = (time        ) => {
-      const dt = Math.min((time - (lastTime || time)) / 16.667, 2);
+      const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
       lastTime = time;
-      const radius = Math.min(115, Math.max(55, width * 0.12));
-      for (const p of particles) {
-        if (pointer) {
-          const dx = p.x - pointer.x;
-          const dy = p.y - pointer.y;
-          const distance = Math.hypot(dx, dy);
-          if (distance < radius) {
-            const force = Math.pow(1 - distance / radius, 2) * 0.85;
-            p.vx += dx / Math.max(distance, 1) * force * dt;
-            p.vy += dy / Math.max(distance, 1) * force * dt;
+      const radius = Math.min(78, Math.max(32, width * 0.075));
+      const motionScale = Math.min(1, width / 800);
+      const travel = Math.max(10, Math.min(34, width * 0.04));
+      // Short-lived swept segments cover the space BETWEEN pointer events. A
+      // bounded history keeps fast strokes continuous without leaving long trails.
+      wakes = wakes.filter(wake => time - wake.time < wakeLifetime);
+      const fields = wakes.map(wake => {
+        const age = Math.max(0, time - wake.time) / wakeLifetime;
+        const fade = (1 - age) ** 2;
+        const spread = radius * (0.85 + wake.energy * 0.3);
+        return { ...wake, fade, spread,
+          minX: Math.min(wake.ax, wake.ax + wake.dx) - spread * 3.3,
+          maxX: Math.max(wake.ax, wake.ax + wake.dx) + spread * 3.3,
+          minY: Math.min(wake.ay, wake.ay + wake.dy) - spread * 3.3,
+          maxY: Math.max(wake.ay, wake.ay + wake.dy) + spread * 3.3 };
+      });
+      // Evaluate the fluid field on a small shared grid, then interpolate it for
+      // each particle. This avoids thousands of repeated Gaussian evaluations.
+      if (fields.length) {
+        for (let row = 0; row < rows; row++) {
+          const y = row * cell;
+          for (let column = 0; column < columns; column++) {
+            const x = column * cell;
+            const variation = 1 + 0.18 * Math.sin(x * 0.023 + y * 0.041);
+            let flowX = 0;
+            let flowY = 0;
+            let weightSum = 0;
+            let peak = 0;
+            for (const field of fields) {
+              if (x < field.minX || x > field.maxX || y < field.minY || y > field.maxY) continue;
+              const along = Math.max(0, Math.min(1,
+                ((x - field.ax) * field.dx + (y - field.ay) * field.dy) / field.lengthSquared));
+              const dx = (x - field.ax - field.dx * along) / field.spread;
+              const dy = (y - field.ay - field.dy * along) / field.spread;
+              // A slightly asymmetric Gaussian has no visible circular edge. The
+              // spatial variation is fixed, so the field doesn't flicker or ripple.
+              const side = dx * -field.uy + dy * field.ux;
+              const softness = variation + 0.12 * side / (1 + Math.abs(side));
+              const weight = Math.exp(-(dx * dx + dy * dy) * 1.6 / softness) * field.fade * field.energy;
+              // Directional drag leads; a restrained curl and a little outward slip
+              // let the stream bend around the pointer rather than excavate a hole.
+              flowX += (field.ux - dy * 0.22 + dx * 0.09) * weight;
+              flowY += (field.uy + dx * 0.22 + dy * 0.09) * weight;
+              weightSum += weight;
+              peak = Math.max(peak, weight);
+            }
+            // Normalize overlapping samples: higher event rates must not multiply
+            // the force. Motion stops feeding the field as soon as the pointer rests.
+            const force = weightSum > 0 ? 0.72 * motionScale * peak / weightSum : 0;
+            const index = row * columns + column;
+            fieldX[index] = flowX * force;
+            fieldY[index] = flowY * force;
           }
         }
-        p.vx = (p.vx + (p.homeX - p.x) * 0.013 * dt) * Math.pow(0.88, dt);
-        p.vy = (p.vy + (p.homeY - p.y) * 0.013 * dt) * Math.pow(0.88, dt);
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
+      }
+      // Small integration steps keep the spring consistent at 30/60/120 Hz.
+      const steps = Math.max(1, Math.ceil(dt * 2));
+      const step = dt / steps;
+      const damping = Math.exp(-0.25 * step);
+      let unsettled = fields.length > 0;
+      for (const p of particles) {
+        let forceX = 0;
+        let forceY = 0;
+        if (fields.length) {
+          const gx = Math.max(0, Math.min(columns - 1.001, p.x / cell));
+          const gy = Math.max(0, Math.min(rows - 1.001, p.y / cell));
+          const column = Math.floor(gx);
+          const row = Math.floor(gy);
+          const fx = gx - column;
+          const fy = gy - row;
+          const index = row * columns + column;
+          const a = (1 - fx) * (1 - fy);
+          const b = fx * (1 - fy);
+          const c = (1 - fx) * fy;
+          const d = fx * fy;
+          forceX = fieldX[index] * a + fieldX[index + 1] * b + fieldX[index + columns] * c + fieldX[index + columns + 1] * d;
+          forceY = fieldY[index] * a + fieldY[index + 1] * b + fieldY[index + columns] * c + fieldY[index + columns + 1] * d;
+        }
+        for (let i = 0; i < steps; i++) {
+          const offsetX = p.x - p.homeX;
+          const offsetY = p.y - p.homeY;
+          const spring = 0.016 * (1 + (offsetX * offsetX + offsetY * offsetY) / (travel * travel));
+          p.vx = (p.vx + (forceX - offsetX * spring) * step) * damping;
+          p.vy = (p.vy + (forceY - offsetY * spring) * step) * damping;
+          p.x += p.vx * step;
+          p.y += p.vy * step;
+        }
+        const distanceSquared = (p.x - p.homeX) ** 2 + (p.y - p.homeY) ** 2;
+        if (distanceSquared > 0.0001 || p.vx * p.vx + p.vy * p.vy > 0.0001) unsettled = true;
+        else if (!fields.length) { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; }
       }
       draw();
-      frame = requestAnimationFrame(animate);
+      // Once calm, leave a static canvas rather than repainting identical dots.
+      frame = unsettled ? requestAnimationFrame(animate) : 0;
+      if (!unsettled) lastTime = 0;
     };
     const start = () => {
       cancelAnimationFrame(frame);
+      frame = 0;
       lastTime = 0;
+      pointer = null;
+      wakes = [];
       if (reducedMotion.matches || document.hidden) {
         particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
         draw();
       } else frame = requestAnimationFrame(animate);
     };
     const move = (event              ) => {
-      if (event.pointerType === 'touch' || reducedMotion.matches) return;
+      if (event.pointerType === 'touch' || reducedMotion.matches || document.hidden) return;
       const rect = element.getBoundingClientRect();
-      pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const coalesced = event.getCoalescedEvents?.();
+      const samples = coalesced?.length ? coalesced : [event];
+      const count = Math.min(samples.length, 8);
+      for (let i = 0; i < count; i++) {
+        const sample = samples[count === 1 ? 0 : Math.round(i * (samples.length - 1) / (count - 1))];
+        const x = sample.clientX - rect.left;
+        const y = sample.clientY - rect.top;
+        const time = sample.timeStamp;
+        if (pointer) {
+          const dx = x - pointer.x;
+          const dy = y - pointer.y;
+          const length = Math.hypot(dx, dy);
+          // Duplicate/stationary samples never sustain an empty region.
+          if (length < 0.1) continue;
+          const gap = time - pointer.time;
+          const elapsed = Math.max(4, Math.min(40, gap));
+          const blend = 1 - Math.exp(-elapsed / 24);
+          const memory = Math.exp(-Math.max(0, gap - 40) / 60);
+          const vx = pointer.vx * memory * (1 - blend) + dx / elapsed * blend;
+          const vy = pointer.vy * memory * (1 - blend) + dy / elapsed * blend;
+          const speed = Math.hypot(vx, vy) * 0.65 + length / elapsed * 0.35;
+          // Saturation makes quick sweeps more expressive without explosive kicks.
+          const energy = 1 - Math.exp(-speed / 0.85);
+          wakes.push({ ax: pointer.x, ay: pointer.y, dx, dy, lengthSquared: length * length,
+            ux: dx / length, uy: dy / length, energy, time });
+          if (wakes.length > maxWakes) wakes.shift();
+          pointer = { x, y, time, vx, vy };
+        } else pointer = { x, y, time, vx: 0, vy: 0 };
+      }
+      if (wakes.length && !frame) {
+        lastTime = performance.now();
+        frame = requestAnimationFrame(animate);
+      }
     };
     const leave = () => { pointer = null; };
     const observer = new ResizeObserver(resize);
@@ -237,8 +411,7 @@ function setup(){
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', start);
     resize();
-    start();
-      return () => {
+    return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
       themeObserver.disconnect();
@@ -250,7 +423,7 @@ function setup(){
     };
 
 }
-globalThis.setup = setup;
+globalThis.setup=setup;
 let cleanup=globalThis.setup();
 let selectedTheme='light';
 const system=matchMedia('(prefers-color-scheme: dark)');

@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import styles from './entrance.module.css';
 
 interface Particle { x: number; y: number; homeX: number; homeY: number; vx: number; vy: number; size: number; blue: boolean }
+interface PointerSample { x: number; y: number; time: number; vx: number; vy: number }
+interface Wake { ax: number; ay: number; dx: number; dy: number; lengthSquared: number; ux: number; uy: number; energy: number; time: number }
 
 export default function ParticleTitle() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -17,9 +19,17 @@ export default function ParticleTitle() {
     let particles: Particle[] = [];
     let width = 0;
     let height = 0;
+    let cell = 14;
+    let columns = 0;
+    let rows = 0;
+    let fieldX = new Float32Array(0);
+    let fieldY = new Float32Array(0);
     let frame = 0;
     let lastTime = 0;
-    let pointer: { x: number; y: number } | null = null;
+    let pointer: PointerSample | null = null;
+    let wakes: Wake[] = [];
+    const wakeLifetime = 240;
+    const maxWakes = 12;
     let ink = '#243148';
     let accent = '#3678e8';
 
@@ -46,7 +56,14 @@ export default function ParticleTitle() {
       const rect = element.getBoundingClientRect();
       width = rect.width;
       height = rect.height;
+      pointer = null;
+      wakes = [];
       if (!width || !height) return;
+      cell = Math.max(10, Math.min(18, width / 70));
+      columns = Math.ceil(width / cell) + 1;
+      rows = Math.ceil(height / cell) + 1;
+      fieldX = new Float32Array(columns * rows);
+      fieldY = new Float32Array(columns * rows);
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       element.width = Math.round(width * ratio);
       element.height = Math.round(height * ratio);
@@ -78,43 +95,155 @@ export default function ParticleTitle() {
       }
       colors();
       setReady(true);
+      start();
     };
 
     const animate = (time: number) => {
-      const dt = Math.min((time - (lastTime || time)) / 16.667, 2);
+      const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
       lastTime = time;
-      const radius = Math.min(115, Math.max(55, width * 0.12));
-      for (const p of particles) {
-        if (pointer) {
-          const dx = p.x - pointer.x;
-          const dy = p.y - pointer.y;
-          const distance = Math.hypot(dx, dy);
-          if (distance < radius) {
-            const force = Math.pow(1 - distance / radius, 2) * 0.85;
-            p.vx += dx / Math.max(distance, 1) * force * dt;
-            p.vy += dy / Math.max(distance, 1) * force * dt;
+      const radius = Math.min(78, Math.max(32, width * 0.075));
+      const motionScale = Math.min(1, width / 800);
+      const travel = Math.max(10, Math.min(34, width * 0.04));
+      // Short-lived swept segments cover the space BETWEEN pointer events. A
+      // bounded history keeps fast strokes continuous without leaving long trails.
+      wakes = wakes.filter(wake => time - wake.time < wakeLifetime);
+      const fields = wakes.map(wake => {
+        const age = Math.max(0, time - wake.time) / wakeLifetime;
+        const fade = (1 - age) ** 2;
+        const spread = radius * (0.85 + wake.energy * 0.3);
+        return { ...wake, fade, spread,
+          minX: Math.min(wake.ax, wake.ax + wake.dx) - spread * 3.3,
+          maxX: Math.max(wake.ax, wake.ax + wake.dx) + spread * 3.3,
+          minY: Math.min(wake.ay, wake.ay + wake.dy) - spread * 3.3,
+          maxY: Math.max(wake.ay, wake.ay + wake.dy) + spread * 3.3 };
+      });
+      // Evaluate the fluid field on a small shared grid, then interpolate it for
+      // each particle. This avoids thousands of repeated Gaussian evaluations.
+      if (fields.length) {
+        for (let row = 0; row < rows; row++) {
+          const y = row * cell;
+          for (let column = 0; column < columns; column++) {
+            const x = column * cell;
+            const variation = 1 + 0.18 * Math.sin(x * 0.023 + y * 0.041);
+            let flowX = 0;
+            let flowY = 0;
+            let weightSum = 0;
+            let peak = 0;
+            for (const field of fields) {
+              if (x < field.minX || x > field.maxX || y < field.minY || y > field.maxY) continue;
+              const along = Math.max(0, Math.min(1,
+                ((x - field.ax) * field.dx + (y - field.ay) * field.dy) / field.lengthSquared));
+              const dx = (x - field.ax - field.dx * along) / field.spread;
+              const dy = (y - field.ay - field.dy * along) / field.spread;
+              // A slightly asymmetric Gaussian has no visible circular edge. The
+              // spatial variation is fixed, so the field doesn't flicker or ripple.
+              const side = dx * -field.uy + dy * field.ux;
+              const softness = variation + 0.12 * side / (1 + Math.abs(side));
+              const weight = Math.exp(-(dx * dx + dy * dy) * 1.6 / softness) * field.fade * field.energy;
+              // Directional drag leads; a restrained curl and a little outward slip
+              // let the stream bend around the pointer rather than excavate a hole.
+              flowX += (field.ux - dy * 0.22 + dx * 0.09) * weight;
+              flowY += (field.uy + dx * 0.22 + dy * 0.09) * weight;
+              weightSum += weight;
+              peak = Math.max(peak, weight);
+            }
+            // Normalize overlapping samples: higher event rates must not multiply
+            // the force. Motion stops feeding the field as soon as the pointer rests.
+            const force = weightSum > 0 ? 0.72 * motionScale * peak / weightSum : 0;
+            const index = row * columns + column;
+            fieldX[index] = flowX * force;
+            fieldY[index] = flowY * force;
           }
         }
-        p.vx = (p.vx + (p.homeX - p.x) * 0.013 * dt) * Math.pow(0.88, dt);
-        p.vy = (p.vy + (p.homeY - p.y) * 0.013 * dt) * Math.pow(0.88, dt);
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
+      }
+      // Small integration steps keep the spring consistent at 30/60/120 Hz.
+      const steps = Math.max(1, Math.ceil(dt * 2));
+      const step = dt / steps;
+      const damping = Math.exp(-0.25 * step);
+      let unsettled = fields.length > 0;
+      for (const p of particles) {
+        let forceX = 0;
+        let forceY = 0;
+        if (fields.length) {
+          const gx = Math.max(0, Math.min(columns - 1.001, p.x / cell));
+          const gy = Math.max(0, Math.min(rows - 1.001, p.y / cell));
+          const column = Math.floor(gx);
+          const row = Math.floor(gy);
+          const fx = gx - column;
+          const fy = gy - row;
+          const index = row * columns + column;
+          const a = (1 - fx) * (1 - fy);
+          const b = fx * (1 - fy);
+          const c = (1 - fx) * fy;
+          const d = fx * fy;
+          forceX = fieldX[index] * a + fieldX[index + 1] * b + fieldX[index + columns] * c + fieldX[index + columns + 1] * d;
+          forceY = fieldY[index] * a + fieldY[index + 1] * b + fieldY[index + columns] * c + fieldY[index + columns + 1] * d;
+        }
+        for (let i = 0; i < steps; i++) {
+          const offsetX = p.x - p.homeX;
+          const offsetY = p.y - p.homeY;
+          const spring = 0.016 * (1 + (offsetX * offsetX + offsetY * offsetY) / (travel * travel));
+          p.vx = (p.vx + (forceX - offsetX * spring) * step) * damping;
+          p.vy = (p.vy + (forceY - offsetY * spring) * step) * damping;
+          p.x += p.vx * step;
+          p.y += p.vy * step;
+        }
+        const distanceSquared = (p.x - p.homeX) ** 2 + (p.y - p.homeY) ** 2;
+        if (distanceSquared > 0.0001 || p.vx * p.vx + p.vy * p.vy > 0.0001) unsettled = true;
+        else if (!fields.length) { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; }
       }
       draw();
-      frame = requestAnimationFrame(animate);
+      // Once calm, leave a static canvas rather than repainting identical dots.
+      frame = unsettled ? requestAnimationFrame(animate) : 0;
+      if (!unsettled) lastTime = 0;
     };
     const start = () => {
       cancelAnimationFrame(frame);
+      frame = 0;
       lastTime = 0;
+      pointer = null;
+      wakes = [];
       if (reducedMotion.matches || document.hidden) {
         particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
         draw();
       } else frame = requestAnimationFrame(animate);
     };
     const move = (event: PointerEvent) => {
-      if (event.pointerType === 'touch' || reducedMotion.matches) return;
+      if (event.pointerType === 'touch' || reducedMotion.matches || document.hidden) return;
       const rect = element.getBoundingClientRect();
-      pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+      const coalesced = event.getCoalescedEvents?.();
+      const samples = coalesced?.length ? coalesced : [event];
+      const count = Math.min(samples.length, 8);
+      for (let i = 0; i < count; i++) {
+        const sample = samples[count === 1 ? 0 : Math.round(i * (samples.length - 1) / (count - 1))];
+        const x = sample.clientX - rect.left;
+        const y = sample.clientY - rect.top;
+        const time = sample.timeStamp;
+        if (pointer) {
+          const dx = x - pointer.x;
+          const dy = y - pointer.y;
+          const length = Math.hypot(dx, dy);
+          // Duplicate/stationary samples never sustain an empty region.
+          if (length < 0.1) continue;
+          const gap = time - pointer.time;
+          const elapsed = Math.max(4, Math.min(40, gap));
+          const blend = 1 - Math.exp(-elapsed / 24);
+          const memory = Math.exp(-Math.max(0, gap - 40) / 60);
+          const vx = pointer.vx * memory * (1 - blend) + dx / elapsed * blend;
+          const vy = pointer.vy * memory * (1 - blend) + dy / elapsed * blend;
+          const speed = Math.hypot(vx, vy) * 0.65 + length / elapsed * 0.35;
+          // Saturation makes quick sweeps more expressive without explosive kicks.
+          const energy = 1 - Math.exp(-speed / 0.85);
+          wakes.push({ ax: pointer.x, ay: pointer.y, dx, dy, lengthSquared: length * length,
+            ux: dx / length, uy: dy / length, energy, time });
+          if (wakes.length > maxWakes) wakes.shift();
+          pointer = { x, y, time, vx, vy };
+        } else pointer = { x, y, time, vx: 0, vy: 0 };
+      }
+      if (wakes.length && !frame) {
+        lastTime = performance.now();
+        frame = requestAnimationFrame(animate);
+      }
     };
     const leave = () => { pointer = null; };
     const observer = new ResizeObserver(resize);
@@ -127,7 +256,6 @@ export default function ParticleTitle() {
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', start);
     resize();
-    start();
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();

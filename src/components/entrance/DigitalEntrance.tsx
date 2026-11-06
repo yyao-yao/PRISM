@@ -24,6 +24,14 @@ export default function DigitalEntrance({ onEnter }: { onEnter: () => void }) {
         if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
         else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
       }}>
+      <div className={styles.signals} aria-hidden="true">
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="M8 1.5 9.5 6.5 14.5 8 9.5 9.5 8 14.5 6.5 9.5 1.5 8 6.5 6.5Z" /></svg></span>
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="m8 2 4.5 6L8 14 3.5 8Z" /></svg></span>
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" /></svg></span>
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="m8 3 5.5 10h-11Z" /></svg></span>
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="M8 8C1-1 15-1 8 8c9-7 9 7 0 0 7 9-7 9 0 0-9 7-9-7 0 0Z" /></svg></span>
+        <span className={styles.signal}><svg viewBox="0 0 16 16"><path d="M8 2v12M2.8 5l10.4 6M2.8 11l10.4-6" /></svg></span>
+      </div>
       <header className={styles.header}>
         <div className={styles.identity}><span className={styles.mark} aria-hidden="true">✳</span> YAO YAO <span className={styles.divider}>/</span> <span className={styles.muted}>PERSONAL INTERFACE</span></div>
         <div className={styles.themes} role="group" aria-label="Color theme">
