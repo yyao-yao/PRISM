@@ -94,25 +94,21 @@
 }
 @media (prefers-reduced-motion: reduce) { .floating { animation: none; }.entry { transition: none; } }
 
-/* A sparse, non-interactive constellation. Separate opacity and drift clocks
-   give each marker a quiet, independent rhythm without continuous spinning. */
+/* Non-interactive markers: JS varies each brightness cycle independently;
+   these CSS clocks provide barely perceptible drift, without spinning. */
 .signals { position: absolute; inset: 0; pointer-events: none; }
-.signal { position: absolute; width: 11px; height: 11px; color: var(--portal-blue); opacity: .28; animation: signalTwinkle var(--twinkle) ease-in-out var(--phase) infinite; }
+.signal { position: absolute; width: 11px; height: 11px; color: var(--portal-blue); opacity: .3; }
 .signal svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.1; stroke-linecap: round; stroke-linejoin: round; transform-origin: center; animation: signalDrift var(--drift) ease-in-out var(--phase) infinite alternate; }
-.signal:nth-child(1) { left: 19%; top: 21%; --twinkle: 13.7s; --drift: 23s; --phase: -4.1s; }
-.signal:nth-child(2) { right: 18%; top: 23%; width: 9px; height: 9px; --twinkle: 18.3s; --drift: 29s; --phase: -12.7s; }
-.signal:nth-child(3) { left: 3.2%; top: 48%; width: 8px; height: 8px; --twinkle: 16.1s; --drift: 21s; --phase: -8.9s; }
-.signal:nth-child(4) { right: 3.5%; top: 53%; width: 9px; height: 9px; --twinkle: 21.7s; --drift: 31s; --phase: -16.3s; }
-.signal:nth-child(5) { left: 25%; bottom: 16%; width: 12px; height: 12px; --twinkle: 19.9s; --drift: 27s; --phase: -6.7s; }
-.signal:nth-child(6) { right: 24%; bottom: 15%; width: 10px; height: 10px; --twinkle: 15.3s; --drift: 25s; --phase: -11.1s; }
-@keyframes signalTwinkle {
-  0%, 100% { opacity: .17; }
-  19% { opacity: .34; }
-  37% { opacity: .22; }
-  53% { opacity: .46; }
-  71% { opacity: .25; }
-  87% { opacity: .32; }
-}
+.signal:nth-child(1) { left: 19%; top: 21%; --drift: 23s; --phase: -4.1s; }
+.signal:nth-child(2) { right: 18%; top: 23%; width: 9px; height: 9px; --drift: 29s; --phase: -12.7s; }
+.signal:nth-child(3) { left: 3.2%; top: 48%; width: 8px; height: 8px; --drift: 21s; --phase: -8.9s; }
+.signal:nth-child(4) { right: 3.5%; top: 53%; width: 9px; height: 9px; --drift: 31s; --phase: -16.3s; }
+.signal:nth-child(5) { left: 25%; bottom: 16%; width: 12px; height: 12px; --drift: 27s; --phase: -6.7s; }
+.signal:nth-child(6) { right: 24%; bottom: 15%; width: 10px; height: 10px; --drift: 25s; --phase: -11.1s; }
+.signal:nth-child(7) { left: 10%; top: 62%; width: 10px; height: 10px; --drift: 33s; --phase: -18.4s; }
+.signal:nth-child(8) { right: 10%; top: 35%; width: 8px; height: 8px; --drift: 26s; --phase: -3.8s; }
+.signal:nth-child(9) { left: 37%; top: 16%; width: 13px; height: 13px; --drift: 35s; --phase: -22.6s; }
+.signal:nth-child(10) { right: 35%; bottom: 10%; width: 9px; height: 9px; --drift: 30s; --phase: -14.2s; }
 @keyframes signalDrift {
   from { transform: translate(-1px, 1px) scale(.96) rotate(-4deg); }
   to { transform: translate(1px, -2px) scale(1.03) rotate(5deg); }
@@ -120,13 +116,19 @@
 @media (max-width: 700px) {
   .signal:nth-child(1) { left: 24%; top: 19%; }
   .signal:nth-child(2) { right: 19%; top: 22%; }
-  .signal:nth-child(3), .signal:nth-child(4) { display: none; }
+  .signal:nth-child(3) { left: 4%; top: 41%; }
+  .signal:nth-child(4) { right: 5%; top: 52%; }
+  .signal:nth-child(7) { left: 7%; top: 66%; }
+  .signal:nth-child(8) { right: 8%; top: 33%; }
+  .signal:nth-child(9) { left: 43%; top: 15%; }
+  .signal:nth-child(10) { right: 12%; bottom: 9%; }
   .signal:nth-child(5) { left: 29%; bottom: 16%; }
   .signal:nth-child(6) { right: 25%; bottom: 18%; }
 }
 @media (max-height: 650px) and (min-width: 701px) {
   .signal:nth-child(1), .signal:nth-child(2) { top: 20%; }
-  .signal:nth-child(5), .signal:nth-child(6) { display: none; }
+  .signal:nth-child(5) { bottom: 15%; }
+  .signal:nth-child(6) { bottom: 13%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .signal { animation: none; opacity: .25; }

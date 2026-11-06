@@ -14,33 +14,40 @@ This is a standalone visual review artifact, separate from the Next.js applicati
 
 In the actual PRISM integration, entry reveals the existing homepage immediately. The two-panel door animation is reserved for Stage 2. Audio has not been implemented.
 
-## Stage 1.1 interaction
+## Particle refinement: the earlier scatter with a watery edge
 
-The pointer now creates a short-lived stream along each sampled motion segment. Smoothed velocity controls a saturating force; directional advection leads, with a small tangential curl and outward slip. A spatially varied Gaussian falloff softens the field edges. The wake expires within 240 ms and duplicate stationary events add no force, avoiding persistent circular holes. A damped spring gradually restores the letter positions, stiffening gently with displacement to keep the typography recognizable.
+The particle appearance and independent outward response use the original Stage 1 drawing, text sampling, spring stiffness (0.013), and return damping (0.88). The earlier quadratic repulsion remains the main force. Beyond the normal displacement range, the spring strengthens smoothly to protect text readability during long, slow strokes. There is no shared group-advection field.
 
-Coalesced pointer samples are used when available. Swept-segment evaluation covers gaps during fast motion; history is capped at 12 segments and eight coalesced samples per event. The field is evaluated once on a coarse shared grid and smoothly interpolated for each particle, reducing repeated force calculations. Frame substeps stabilize spring integration at different refresh rates. Animation stops repainting once the letters are calm and resumes on movement. Touch, reduced-motion, visibility changes, resizing, and listener cleanup remain handled.
+Only the disturbance edge is refined: its falloff stretches slightly behind movement, a faint tail feathers the perimeter, and a tiny amount of edge-local drag/shear suggests a fingertip brushing water. Slow strokes have a modestly larger radius and force gain, and a longer fade. Fast strokes are controlled rather than amplified. Pausing fades the interaction completely so it cannot hold open a persistent hole.
 
-The preview effect is generated directly from the React effect by stripping TypeScript; it contains the same motion equations. The existing typography sampling, layout, palettes, grid, and decorative styling are preserved.
+A brief, bounded swept path covers gaps between pointer events. Coalesced samples are used when available; at most four short segments remain for 100 ms. The pointer's local disturbance fades over 260–580 ms, depending on speed. The original return spring continues settling particles after the force fades. Frame substeps stabilize the response across refresh rates, and painting stops once the title is calm. Touch, reduced motion, visibility changes, resizing, and cleanup remain handled.
 
-## Quiet interface markers
+The standalone preview's motion engine is extracted directly from the React effect, with TypeScript removed. Typography, color, layout, grid, and the existing portal controls remain unchanged.
 
-Six small, outlined blue SVG symbols sit in the whitespace: a four-point star, diamond, cross, triangle, flower-like mark, and six-point signal. Each has its own negative phase offset, an irregular opacity sequence over 13.7–21.7 seconds, and a separate slow drift clock. Drift stays within a few pixels, scale varies from 0.96 to 1.03, and rotation stays between -4 and 5 degrees. There is no continuous spin or synchronized blinking.
+## Ten delicate interface markers
 
-Narrow screens show four symbols; short desktop windows hide the lower pair. The symbols are non-interactive and hidden from assistive technology. Reduced motion makes all six static at a faint opacity. Both the React portal and standalone preview use the same SVGs and scoped styles.
+Ten small blue outline symbols (8–13 px) include four-point stars, sparkles, diamonds, crosses, triangles, tiny hearts, and a flower-like shape. Their placement is asymmetric around the title and in surrounding whitespace, including narrow layouts.
+
+`animateSignals.ts` drives real Web Animations in both React and the standalone HTML. Every 11–23-second brightness cycle picks new timing offsets, intensity, and duration independently, so the twinkle does not repeat a fixed synchronized pattern. Only two star shapes may briefly glint more brightly, with a soft three-pixel glow. Separate 21–35-second CSS clocks add tiny positional drift, 0.96–1.03 scaling, and gentle -4 to 5 degree rotation. The same blue theme token supplies the light/dark color.
+
+The symbols are non-interactive and hidden from assistive technology. Reduced motion cancels their brightness animations and disables drift, leaving static faint markers. Brightness animations also pause while the document is hidden, restart when visible, and are canceled on entry/replay teardown. Browsers without Web Animations retain static markers.
 
 ## Source changes
 
 - `src/app/layout.tsx`: adds the entrance boundary inside the existing providers and makes the main element focusable after entry.
 - `src/components/entrance/EntranceBoundary.tsx`: homepage eligibility, per-tab session state, background interaction, and focus restoration.
-- `src/components/entrance/DigitalEntrance.tsx`: portal composition, theme controls, entry control, keyboard behavior, and six decorative SVG markers.
-- `src/components/entrance/ParticleTitle.tsx`: canvas particle sampling, velocity-aware swept flow, restoration, resizing, reduced motion, and cleanup.
-- `src/components/entrance/entrance.module.css`: scoped portal styles, both palettes, grid, decorations, responsive layouts, and independent marker twinkling.
+- `src/components/entrance/DigitalEntrance.tsx`: portal composition, theme controls, entry control, keyboard behavior, and ten decorative SVG markers.
+- `src/components/entrance/ParticleTitle.tsx`: canvas particle sampling, original-style independent scattering with a softly trailing edge, restoration, resizing, reduced motion, and cleanup.
+- `src/components/entrance/animateSignals.ts`: independently varied brightness cycles, occasional star glints, and motion/visibility lifecycle.
+- `src/components/entrance/entrance.module.css`: scoped portal styles, both palettes, grid, decorations, responsive layouts, and slow marker drift.
 
 Existing content, academic page renderers, navigation, and deployment configuration are unchanged.
 
 ## Validation status
 
-Stage 1.1 checks: whitespace/diff and standalone JavaScript syntax; exact preview-engine synchronization; preserved existing preview markup and styles; matching six-symbol decoration markup and styles; fast versus slow strokes; sparse swept-path coverage; directional flow and curl; stationary settling and duplicate-event rejection; coalesced events; bounded sustained movement; 30/60/120 Hz settling; narrow canvas; reduced-motion, touch, visibility and resize handling; listener cleanup; idle repaint suspension. These checks exercise the actual extracted effect using simulated and native canvas contexts, not a browser. Native canvas timing is not a browser performance guarantee.
+Checks exercise the actual extracted engine: original draw/sampling/spring preservation; independent outward scattering; slower versus faster strokes; trailing-edge asymmetry; sparse swept-path coverage; stationary settling; coalesced input; bounded history; reduced motion, touch, visibility and resize handling; cleanup; narrow canvases; and settling at 30/60/120 Hz. Tests use simulated and native canvas contexts, not browser rendering.
+
+The brightness-animation tests verify ten live animations with distinct timing, changing subsequent cycles, at most two glinting stars, smooth ordered keyframes, reduced-motion/visibility cancellation, restart, and cleanup. The standalone script passes JavaScript syntax checks; both particle and symbol engines match the React source.
 
 Not verified: browser rendering and the Next.js build. The supported browser tool was unavailable. Dependency installation was blocked by the execution environment's configured proxy; `npm run build` could not find Next.js. These checks remain pending.
 

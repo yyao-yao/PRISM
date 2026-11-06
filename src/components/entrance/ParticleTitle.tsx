@@ -5,7 +5,7 @@ import styles from './entrance.module.css';
 
 interface Particle { x: number; y: number; homeX: number; homeY: number; vx: number; vy: number; size: number; blue: boolean }
 interface PointerSample { x: number; y: number; time: number; vx: number; vy: number }
-interface Wake { ax: number; ay: number; dx: number; dy: number; lengthSquared: number; ux: number; uy: number; energy: number; time: number }
+interface Wake { ax: number; ay: number; dx: number; dy: number; lengthSquared: number; ux: number; uy: number; speed: number; time: number }
 
 export default function ParticleTitle() {
   const canvas = useRef<HTMLCanvasElement>(null);
@@ -19,17 +19,12 @@ export default function ParticleTitle() {
     let particles: Particle[] = [];
     let width = 0;
     let height = 0;
-    let cell = 14;
-    let columns = 0;
-    let rows = 0;
-    let fieldX = new Float32Array(0);
-    let fieldY = new Float32Array(0);
     let frame = 0;
     let lastTime = 0;
     let pointer: PointerSample | null = null;
     let wakes: Wake[] = [];
-    const wakeLifetime = 240;
-    const maxWakes = 12;
+    const wakeLifetime = 100;
+    const maxWakes = 4;
     let ink = '#243148';
     let accent = '#3678e8';
 
@@ -59,11 +54,6 @@ export default function ParticleTitle() {
       pointer = null;
       wakes = [];
       if (!width || !height) return;
-      cell = Math.max(10, Math.min(18, width / 70));
-      columns = Math.ceil(width / cell) + 1;
-      rows = Math.ceil(height / cell) + 1;
-      fieldX = new Float32Array(columns * rows);
-      fieldY = new Float32Array(columns * rows);
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       element.width = Math.round(width * ratio);
       element.height = Math.round(height * ratio);
@@ -101,96 +91,88 @@ export default function ParticleTitle() {
     const animate = (time: number) => {
       const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
       lastTime = time;
-      const radius = Math.min(78, Math.max(32, width * 0.075));
-      const motionScale = Math.min(1, width / 800);
-      const travel = Math.max(10, Math.min(34, width * 0.04));
-      // Short-lived swept segments cover the space BETWEEN pointer events. A
-      // bounded history keeps fast strokes continuous without leaving long trails.
+      // Keep the original independent scatter and spring, with only a small
+      // directional stretch and shear at the edge of the pointer disturbance.
+      const baseRadius = Math.min(115, Math.max(55, width * 0.12));
+      const motionScale = Math.min(1, width / 700);
+      const travel = Math.max(14, Math.min(30, width * 0.045));
       wakes = wakes.filter(wake => time - wake.time < wakeLifetime);
-      const fields = wakes.map(wake => {
-        const age = Math.max(0, time - wake.time) / wakeLifetime;
-        const fade = (1 - age) ** 2;
-        const spread = radius * (0.85 + wake.energy * 0.3);
-        return { ...wake, fade, spread,
-          minX: Math.min(wake.ax, wake.ax + wake.dx) - spread * 3.3,
-          maxX: Math.max(wake.ax, wake.ax + wake.dx) + spread * 3.3,
-          minY: Math.min(wake.ay, wake.ay + wake.dy) - spread * 3.3,
-          maxY: Math.max(wake.ay, wake.ay + wake.dy) + spread * 3.3 };
+      const sources = wakes.map(wake => {
+        const slow = 1 / (1 + wake.speed / 0.55);
+        return { ...wake, radius: baseRadius * (1 + slow * 0.1),
+          gain: 0.85 + slow * 0.25,
+          fade: Math.max(0, 1 - (time - wake.time) / wakeLifetime) ** 2 * 0.65,
+          moving: Math.min(1, wake.speed / 0.12) };
       });
-      // Evaluate the fluid field on a small shared grid, then interpolate it for
-      // each particle. This avoids thousands of repeated Gaussian evaluations.
-      if (fields.length) {
-        for (let row = 0; row < rows; row++) {
-          const y = row * cell;
-          for (let column = 0; column < columns; column++) {
-            const x = column * cell;
-            const variation = 1 + 0.18 * Math.sin(x * 0.023 + y * 0.041);
-            let flowX = 0;
-            let flowY = 0;
-            let weightSum = 0;
-            let peak = 0;
-            for (const field of fields) {
-              if (x < field.minX || x > field.maxX || y < field.minY || y > field.maxY) continue;
-              const along = Math.max(0, Math.min(1,
-                ((x - field.ax) * field.dx + (y - field.ay) * field.dy) / field.lengthSquared));
-              const dx = (x - field.ax - field.dx * along) / field.spread;
-              const dy = (y - field.ay - field.dy * along) / field.spread;
-              // A slightly asymmetric Gaussian has no visible circular edge. The
-              // spatial variation is fixed, so the field doesn't flicker or ripple.
-              const side = dx * -field.uy + dy * field.ux;
-              const softness = variation + 0.12 * side / (1 + Math.abs(side));
-              const weight = Math.exp(-(dx * dx + dy * dy) * 1.6 / softness) * field.fade * field.energy;
-              // Directional drag leads; a restrained curl and a little outward slip
-              // let the stream bend around the pointer rather than excavate a hole.
-              flowX += (field.ux - dy * 0.22 + dx * 0.09) * weight;
-              flowY += (field.uy + dx * 0.22 + dy * 0.09) * weight;
-              weightSum += weight;
-              peak = Math.max(peak, weight);
-            }
-            // Normalize overlapping samples: higher event rates must not multiply
-            // the force. Motion stops feeding the field as soon as the pointer rests.
-            const force = weightSum > 0 ? 0.72 * motionScale * peak / weightSum : 0;
-            const index = row * columns + column;
-            fieldX[index] = flowX * force;
-            fieldY[index] = flowY * force;
-          }
-        }
+      if (pointer) {
+        const speed = Math.hypot(pointer.vx, pointer.vy);
+        const slow = 1 / (1 + speed / 0.55);
+        // A pause fades the disturbance instead of maintaining a circular hole.
+        // Slow brushing is a little fuller and lingers longer than fast strokes.
+        const fade = Math.max(0, 1 - (time - pointer.time) / (260 + slow * 320)) ** 2;
+        if (fade > 0) sources.push({ ax: pointer.x, ay: pointer.y, dx: 0, dy: 0,
+          lengthSquared: 1, ux: speed > 0.001 ? pointer.vx / speed : 0,
+          uy: speed > 0.001 ? pointer.vy / speed : 0, speed, time: pointer.time,
+          radius: baseRadius * (1 + slow * 0.1), gain: 0.85 + slow * 0.25,
+          fade, moving: Math.min(1, speed / 0.12) });
       }
-      // Small integration steps keep the spring consistent at 30/60/120 Hz.
       const steps = Math.max(1, Math.ceil(dt * 2));
       const step = dt / steps;
-      const damping = Math.exp(-0.25 * step);
-      let unsettled = fields.length > 0;
+      const damping = Math.pow(0.88, step);
+      let unsettled = sources.length > 0;
       for (const p of particles) {
         let forceX = 0;
         let forceY = 0;
-        if (fields.length) {
-          const gx = Math.max(0, Math.min(columns - 1.001, p.x / cell));
-          const gy = Math.max(0, Math.min(rows - 1.001, p.y / cell));
-          const column = Math.floor(gx);
-          const row = Math.floor(gy);
-          const fx = gx - column;
-          const fy = gy - row;
-          const index = row * columns + column;
-          const a = (1 - fx) * (1 - fy);
-          const b = fx * (1 - fy);
-          const c = (1 - fx) * fy;
-          const d = fx * fy;
-          forceX = fieldX[index] * a + fieldX[index + 1] * b + fieldX[index + columns] * c + fieldX[index + columns + 1] * d;
-          forceY = fieldY[index] * a + fieldY[index + 1] * b + fieldY[index + columns] * c + fieldY[index + columns + 1] * d;
+        let weightSum = 0;
+        let peak = 0;
+        for (const source of sources) {
+          // Project onto the brief swept segment so sparse/fast events still
+          // brush particles between positions. No shared group-advection field.
+          const alongSegment = Math.max(0, Math.min(1,
+            ((p.x - source.ax) * source.dx + (p.y - source.ay) * source.dy) / source.lengthSquared));
+          const dx = p.x - source.ax - source.dx * alongSegment;
+          const dy = p.y - source.ay - source.dy * alongSegment;
+          const distanceSquared = dx * dx + dy * dy;
+          if (distanceSquared > source.radius * source.radius * 8) continue;
+          const along = dx * source.ux + dy * source.uy;
+          const across = dx * -source.uy + dy * source.ux;
+          const behind = 0.5 - along / (2 * (Math.abs(along) + source.radius * 0.3));
+          const stretch = 1 + 0.24 * behind * source.moving;
+          const qSquared = (along * along / (stretch * stretch) + across * across) / (source.radius * source.radius);
+          // With no direction yet, retain a soft, round initial touch.
+          const q = source.ux || source.uy ? qSquared : distanceSquared / (source.radius * source.radius);
+          // Preserve the older quadratic repulsion profile; just feather its
+          // perimeter with a faint tail instead of replacing the whole motion.
+          const core = Math.max(0, 1 - Math.sqrt(q));
+          const weight = (core * core + 0.022 * Math.exp(-q * 4)) * source.fade * source.gain;
+          const distance = Math.sqrt(distanceSquared + 16);
+          // Outward scatter is dominant, just like the earlier version. The
+          // tiny drag lives only in the skirt, like water brushed by a fingertip.
+          const skirt = q * Math.exp(-q * 3) * source.moving;
+          const slip = 0.06 * skirt;
+          const curl = 0.025 * skirt * across / source.radius;
+          forceX += (dx / distance * 0.82 + source.ux * slip - source.uy * curl) * weight;
+          forceY += (dy / distance * 0.82 + source.uy * slip + source.ux * curl) * weight;
+          weightSum += weight;
+          peak = Math.max(peak, weight);
         }
+        // Overlapping path samples blend without multiplying the disturbance.
+        const strength = weightSum > 0 ? motionScale * peak / weightSum : 0;
         for (let i = 0; i < steps; i++) {
           const offsetX = p.x - p.homeX;
           const offsetY = p.y - p.homeY;
-          const spring = 0.016 * (1 + (offsetX * offsetX + offsetY * offsetY) / (travel * travel));
-          p.vx = (p.vx + (forceX - offsetX * spring) * step) * damping;
-          p.vy = (p.vy + (forceY - offsetY * spring) * step) * damping;
+          // The original spring is unchanged through ordinary motion. A soft
+          // guard beyond that range keeps long slow strokes from pulling text apart.
+          const excess = Math.max(0, (offsetX * offsetX + offsetY * offsetY) / (travel * travel) - 1);
+          const spring = 0.013 * (1 + excess * excess);
+          p.vx = (p.vx + (forceX * strength - offsetX * spring) * step) * damping;
+          p.vy = (p.vy + (forceY * strength - offsetY * spring) * step) * damping;
           p.x += p.vx * step;
           p.y += p.vy * step;
         }
         const distanceSquared = (p.x - p.homeX) ** 2 + (p.y - p.homeY) ** 2;
         if (distanceSquared > 0.0001 || p.vx * p.vx + p.vy * p.vy > 0.0001) unsettled = true;
-        else if (!fields.length) { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; }
+        else if (!sources.length) { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; }
       }
       draw();
       // Once calm, leave a static canvas rather than repainting identical dots.
@@ -232,15 +214,13 @@ export default function ParticleTitle() {
           const vx = pointer.vx * memory * (1 - blend) + dx / elapsed * blend;
           const vy = pointer.vy * memory * (1 - blend) + dy / elapsed * blend;
           const speed = Math.hypot(vx, vy) * 0.65 + length / elapsed * 0.35;
-          // Saturation makes quick sweeps more expressive without explosive kicks.
-          const energy = 1 - Math.exp(-speed / 0.85);
           wakes.push({ ax: pointer.x, ay: pointer.y, dx, dy, lengthSquared: length * length,
-            ux: dx / length, uy: dy / length, energy, time });
+            ux: dx / length, uy: dy / length, speed, time });
           if (wakes.length > maxWakes) wakes.shift();
           pointer = { x, y, time, vx, vy };
         } else pointer = { x, y, time, vx: 0, vy: 0 };
       }
-      if (wakes.length && !frame) {
+      if (pointer && !frame) {
         lastTime = performance.now();
         frame = requestAnimationFrame(animate);
       }
