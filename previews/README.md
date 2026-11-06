@@ -1,64 +1,61 @@
-# Stage 1.1 digital portal preview
+# Interactive PRISM Home — local review
 
-Download `prism-stage1-preview.html` with GitHub's **Download raw file** button, then open the saved file in a modern browser. No dependencies or local server are required. Alternatively, download this branch as a ZIP and open the HTML inside `previews/`.
+Download `prism-stage1-preview.html` using GitHub's **Download raw file**, then open it in a modern browser. The Home interaction requires no server, dependencies, external fonts, or network access.
 
-This is a standalone visual review artifact, separate from the Next.js application. It uses the entrance CSS and extracted particle engine, with plain JavaScript controls replacing the React integration. The academic homepage is not included in this preview.
+The HTML is a standalone Home preview, not a copy of all academic pages. Its academic navigation links target the real PRISM routes and require the running/built application. Its Home link resets the greeting locally. To review all navigation, run the repository with `npm run dev`, or serve the static `out/` build.
 
-- Switch between light, dark, and system themes.
-- Sweep the mouse through the lettering slowly, then quickly: faster strokes create stronger, controlled directional flow.
-- Pause over a letter: the short wake fades and particles restore even while the pointer remains there.
-- Try quick passes across the title: the field covers the segment between events, not only the event endpoints.
-- Touch devices display the particle title without mouse interaction.
-- Reduced-motion preferences disable particle movement and floating decorations.
-- `initiate_entry()` opens a review screen; Replay returns to the portal.
+## Routes
 
-In the actual PRISM integration, entry reveals the existing homepage immediately. The two-panel door animation is reserved for Stage 2. Audio has not been implemented.
+| Navigation | Route |
+| --- | --- |
+| Home | `/` |
+| About | `/about/` |
+| Research | `/publications/` |
+| Teaching | `/teaching/` |
+| CV | `/cv/` |
 
-## Particle refinement: the earlier scatter with a watery edge
+The previous academic homepage's content-loading logic and renderer now live at `/about`. Publications, Teaching, CV, Awards (`/awards/`), Services (`/services/`), all content files, and localized example content are preserved. Navigation uses ordinary links. There is no entry gate, session-based eligibility, hidden academic homepage underneath Home, automatic About redirect, modal focus trap, or door animation.
 
-The particle appearance and independent outward response use the original Stage 1 drawing, text sampling, spring stiffness (0.013), and return damping (0.88). The earlier quadratic repulsion remains the main force. Beyond the normal displacement range, the spring strengthens smoothly to protect text readability during long, slow strokes. There is no shared group-advection field.
+## Home interaction
 
-Only the disturbance edge is refined: its falloff stretches slightly behind movement, a faint tail feathers the perimeter, and a tiny amount of edge-local drag/shear suggests a fingertip brushing water. Slow strokes have a modestly larger radius and force gain, and a longer fade. Fast strokes are controlled rather than amplified. Pausing fades the interaction completely so it cannot hold open a persistent hole.
+- Click the background or particle title to alternate between **YAO YAO** and **Nice to meet you.** while staying on Home.
+- Each change takes about **1.3 seconds**: a small loosening, individually curved travel, and gradual gathering/settling. Repeated clicks retarget the current cloud without snapping.
+- Both phrases use the approved font and sampling density. A reusable pool handles different point counts with gradual fades. Surplus particles are invisible at rest, so the new phrase is not overpopulated.
+- The morph transports reference positions separately from the existing mouse offsets and velocity. The approved mouse-force equations and pointer tracking are unchanged and continue to work on both phrases.
+- Navigation, theme controls, and other interactive regions are excluded from background toggling. A gesture moving more than six CSS pixels, canceled touch gestures, or text selection cannot accidentally toggle the text.
+- The unchanged-looking title has a native keyboard button: Tab to it, then press **Enter** or **Space**. A keyboard focus ring and screen-reader help/status are provided.
+- Reduced motion changes phrases immediately. Returning to Home, selecting Home again, or restoring Home from browser page cache resets the greeting to **YAO YAO**.
+- The visible entry button is removed; a non-interactive spacer preserves the composition's vertical spacing.
 
-A brief, bounded swept path covers gaps between pointer events. Coalesced samples are used when available; at most four short segments remain for 100 ms. The pointer's local disturbance fades over 260–580 ms, depending on speed. The original return spring continues settling particles after the force fades. Frame substeps stabilize the response across refresh rates, and painting stops once the title is calm. Touch, reduced motion, visibility changes, resizing, and cleanup remain handled.
+The approved grid, scene copy, star shapes/positions/colors, and complete `animateSignals.ts` helper are unchanged. The same independent breathing and stochastic twinkling run in both themes. There is no audio.
 
-The standalone preview's motion engine is extracted directly from the React effect, with TypeScript removed. Typography, color, layout, grid, and the existing portal controls remain unchanged.
+## Source and reproducibility
 
-## Ten delicate interface markers
+- `src/app/page.tsx`: the actual particle Home route.
+- `src/app/about/page.tsx`: original academic homepage loading/rendering logic.
+- `src/app/layout.tsx` and `EntranceBoundary.tsx`: route-aware academic chrome; Home is normal page content.
+- `src/lib/navigation.ts` and `Navigation.tsx`: the shared five destinations and academic navigation.
+- `DigitalEntrance.tsx` and `homeInteraction.ts`: Home composition, local greeting state, keyboard target, and guarded gesture binding.
+- `ParticleTitle.tsx`: cached masks and the separate reference-position morph.
+- `entrance.module.css`: additive navigation, title-button and spacer styles only; approved scene/star rules remain intact.
 
-Ten small blue outline symbols (8–13 px) include four-point stars, sparkles, diamonds, crosses, triangles, tiny hearts, and a flower-like shape. Their placement is asymmetric around the title and in surrounding whitespace, including narrow layouts.
+Run from the repository root:
 
-`animateSignals.ts` drives independent native Web Animations in both React and the standalone HTML. Breathing cycles vary independently over **2.5–4.5 seconds**, with newly sampled duration, phase and scale peaks each cycle. Scale varies approximately **0.93–1.10**, with tiny position changes and subtle opacity modulation. Individual SVG scale/translate compose with the existing CSS drift; breathing opacity is separate from the wrapper's twinkle/glow.
+```sh
+npm ci
+node previews/check-home.mjs
+node previews/sync-home-preview.mjs
+npm run build
+```
 
-Each symbol schedules its own next twinkle with a fresh **1.5–5-second waiting time**, independently of breathing. Every event randomizes fade-in (**0.2–0.5 s**), peak hold (**0.1–0.3 s**), fade-out (**0.5–1 s**), peak intensity, and glow. There is no synchronized animation loop or repeating twinkle CSS sequence. A small percentage of events get a quieter follow-up after a **1.5–2-second** pause; a follow-up cannot chain into another follow-up.
+The generator derives the standalone markup, CSS, particle engine, star helper, gesture handling and navigation from the actual sources. It introduces no runtime dependencies and is safe to rerun. The deterministic tests exercise the real extracted canvas effect: unequal counts and opacity fades, non-linear paths, 1.3-second completion, exact original point appearance after return, rapid retargeting, instant reset, reduced motion, visibility/resize recovery, and cleanup during a transition.
 
-Only the two existing star-shaped glint candidates can receive the occasional brighter **3.5–5 px** soft halo. Other events use smaller randomized halos. All twinkles start and end at the original **0.3 wrapper opacity**, clear their glow, and leave an idle interval before the next event. Breathing also includes resting plateaus at scale 1 and zero added translation. There is no persistent brightness boost in light mode. The existing shapes, positions, colors, theme behavior, CSS drift, and particle engine are unchanged.
+## Verification
 
-The symbols remain non-interactive and hidden from assistive technology. Reduced motion or a hidden document clears pending timers and cancels native animations; the existing CSS drift is paused too. Returning restores the prior CSS play state and starts fresh independent schedules. Entry/unmount cancels everything, and Replay initializes fresh schedules. Generation guards prevent stale callbacks from restarting animation after teardown. Browsers without Web Animations retain static markers.
+The Next.js production build, its lint/type checks, deterministic morph tests, and source-preservation checks pass. The static build includes the new About route and every previous academic route. The mouse-force kernel, pointer tracking, star helper, content files, academic renderers and deployment configuration are unchanged.
 
-## Source changes
+Chromium checks passed against both the production static PRISM app and the standalone HTML: background/title toggles stay on Home; transformations completed in approximately 1.31 seconds; repeated toggles return the exact original point count and particle radii; native Enter/Space activation works; drag-out-and-back, text selection and canceled touch gestures are excluded correctly; rapid retargeting does not snap; Home resets immediately; theme controls and light/dark/system changes do not trigger text transformations; the original mouse dispersion works on both phrases; reduced motion switches instantly and preserves the existing static-star behavior. Mobile viewport, touch taps and orientation/resize recovery also passed without browser script errors.
 
-- `src/app/layout.tsx`: adds the entrance boundary inside the existing providers and makes the main element focusable after entry.
-- `src/components/entrance/EntranceBoundary.tsx`: homepage eligibility, per-tab session state, background interaction, and focus restoration.
-- `src/components/entrance/DigitalEntrance.tsx`: portal composition, theme controls, entry control, keyboard behavior, and ten decorative SVG markers.
-- `src/components/entrance/ParticleTitle.tsx`: canvas particle sampling, original-style independent scattering with a softly trailing edge, restoration, resizing, reduced motion, and cleanup.
-- `src/components/entrance/animateSignals.ts`: independent continuous breathing, timer-scheduled stochastic twinkles, occasional glints, and full timer/animation/drift cleanup.
-- `src/components/entrance/entrance.module.css`: scoped portal styles, both palettes, grid, decorations, responsive layouts, and slow marker drift.
+Actual application navigation was verified for About, Research, Teaching and CV, plus browser Back returning to default Home. Direct requests to About, Publications, Teaching, CV, Awards and Services all succeeded. Old session entry flags and `/#about` do not gate Home or automatically navigate to About.
 
-Existing content, academic page renderers, navigation, and deployment configuration are unchanged.
-
-## Validation status
-
-Checks exercise the actual extracted engine: original draw/sampling/spring preservation; independent outward scattering; slower versus faster strokes; trailing-edge asymmetry; sparse swept-path coverage; stationary settling; coalesced input; bounded history; reduced motion, touch, visibility and resize handling; cleanup; narrow canvases; and settling at 30/60/120 Hz. Tests use simulated and native canvas contexts, not browser rendering.
-
-The current standalone preview was tested in actual headless Chromium using a temporary loopback-only server (not deployed). Instrumentation confirmed that `animateSignals()` is called, starts ten native breathing animations and ten independent waits, and is not suppressed by CSS. At startup, reduced motion was off, the document was visible, and all ten wrappers had baseline opacity 0.3.
-
-Nine seconds of computed-style sampling in each theme verified perceptible scale excursions, visible twinkle peaks, return to baseline opacity and unscaled resting states, the unchanged light/dark colors, and running CSS drift alongside Web Animations. The first sampled visible twinkle appeared approximately 2.2 seconds after startup. Recorded native events and timers matched the requested wait, fade-in, hold and fade-out ranges, with distinct randomized timings. Theme switching retained the live breathing animations. Entry/Replay, mobile, and real browser reduced-motion emulation also passed, with zero browser script errors.
-
-Visibility cleanup was tested in the real browser with a **simulated hidden getter** (headless tabs do not reliably become hidden): dispatching the visibility event cleared pending waits, canceled breathing/twinkles, paused CSS drift, and subsequently resumed correctly. This tests the visibility handler, not a physical browser-tab background transition.
-
-Deterministic scheduler tests additionally cover parameter boundaries, the brighter-glint branch, the smaller paired event and its non-chaining rule, restoration of existing CSS play-state priority, and stale callback cancellation. JavaScript syntax and preview/source parity checks pass. Only the shared symbol helper, its exact embedded preview copy, and these review notes changed.
-
-The Next.js build remains unverified. Dependency installation was previously blocked by the execution environment's configured proxy; Next.js was not installed. No particle, layout, navigation, academic page, or content code was changed in this symbol-animation revision.
-
-This branch is for review. No deployment or merge is included.
+A desktop/mobile/short-window comparison against the approved preview verified unchanged canvas, description, hint and all ten symbol positions. Visual review also checked the reforming text and mobile navigation. Safari/Firefox, physical mobile devices and a real screen-reader session were not tested. No merge or deployment is part of this work.

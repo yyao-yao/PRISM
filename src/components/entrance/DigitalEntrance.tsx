@@ -1,34 +1,35 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { PRIMARY_NAVIGATION } from '@/lib/navigation';
+import { bindHomeInteraction } from './homeInteraction';
 import { useThemeStore } from '@/lib/stores/themeStore';
-import ParticleTitle from './ParticleTitle';
+import ParticleTitle, { type ParticlePhrase } from './ParticleTitle';
 import { animateSignals } from './animateSignals';
 import styles from './entrance.module.css';
 
-export default function DigitalEntrance({ onEnter }: { onEnter: () => void }) {
+export default function DigitalEntrance() {
   const { theme, setTheme } = useThemeStore();
-  const entry = useRef<HTMLButtonElement>(null);
+  const [greeting, setGreeting] = useState<{ phrase: ParticlePhrase; animate: boolean; revision: number }>({
+    phrase: 'YAO YAO', animate: false, revision: 0,
+  });
   const portal = useRef<HTMLElement>(null);
   const signals = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { entry.current?.focus({ preventScroll: true }); }, []);
+  useEffect(() => {
+    if (!portal.current) return;
+    return bindHomeInteraction(portal.current,
+      () => setGreeting(current => ({ phrase: current.phrase === 'YAO YAO' ? 'Nice to meet you.' : 'YAO YAO', animate: true, revision: current.revision + 1 })),
+      () => setGreeting(current => ({ phrase: 'YAO YAO', animate: false, revision: current.revision + 1 })),
+    );
+  }, []);
   useEffect(() => {
     if (signals.current) return animateSignals(signals.current);
   }, []);
 
   return (
-    <section ref={portal} className={styles.portal} role="dialog" aria-modal="true" aria-labelledby="portal-title"
-      onKeyDown={(event) => {
-        if (event.key === 'Escape') onEnter();
-        if (event.key !== 'Tab') return;
-        const controls = portal.current?.querySelectorAll<HTMLButtonElement>('button');
-        if (!controls?.length) return;
-        const first = controls[0];
-        const last = controls[controls.length - 1];
-        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
-        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
-      }}>
+    <section ref={portal} className={styles.portal} aria-labelledby="portal-title">
       <div ref={signals} className={styles.signals} aria-hidden="true">
         <span className={styles.signal} data-signal data-glint><svg viewBox="0 0 16 16"><path d="M8 1.5 9.5 6.5 14.5 8 9.5 9.5 8 14.5 6.5 9.5 1.5 8 6.5 6.5Z" /></svg></span>
         <span className={styles.signal} data-signal><svg viewBox="0 0 16 16"><path d="m8 2 4.5 6L8 14 3.5 8Z" /></svg></span>
@@ -43,7 +44,10 @@ export default function DigitalEntrance({ onEnter }: { onEnter: () => void }) {
       </div>
       <header className={styles.header}>
         <div className={styles.identity}><span className={styles.mark} aria-hidden="true">✳</span> YAO YAO <span className={styles.divider}>/</span> <span className={styles.muted}>PERSONAL INTERFACE</span></div>
-        <div className={styles.themes} role="group" aria-label="Color theme">
+        <nav className={styles.homeNav} aria-label="Primary navigation">
+          {PRIMARY_NAVIGATION.map(item => <Link key={item.id} href={item.href} aria-current={item.id === 'home' ? 'page' : undefined} data-home-reset={item.id === 'home' ? '' : undefined}>{item.title}</Link>)}
+        </nav>
+        <div className={styles.themes} data-no-toggle role="group" aria-label="Color theme">
           {(['light', 'dark', 'system'] as const).map((value) => <button key={value} type="button" aria-pressed={theme === value} onClick={() => setTheme(value)}>{value}</button>)}
         </div>
       </header>
@@ -51,11 +55,13 @@ export default function DigitalEntrance({ onEnter }: { onEnter: () => void }) {
       <div className={styles.coordinates} aria-hidden="true"><span>INDEX — 001</span><span>EST. / ACADEMIC SPACE</span></div>
       <div className={styles.content}>
         <p className={styles.eyebrow}><span className={styles.statusDot} /> A SMALL POINT OF ENTRY</p>
-        <h1 id="portal-title" className={styles.srOnly}>Yao Yao — academic website entrance</h1>
-        <div className={styles.title}><ParticleTitle /><span className={styles.bracketLeft} aria-hidden="true">+</span><span className={styles.bracketRight} aria-hidden="true">+</span></div>
+        <h1 id="portal-title" className={styles.srOnly}>Yao Yao — Home</h1>
+        <div className={styles.title}><button type="button" className={styles.titleToggle} data-particle-toggle aria-label="Change particle greeting" aria-pressed={greeting.phrase !== 'YAO YAO'} aria-describedby="greeting-help"><ParticleTitle phrase={greeting.phrase} animateChange={greeting.animate} revision={greeting.revision} /></button><span className={styles.bracketLeft} aria-hidden="true">+</span><span className={styles.bracketRight} aria-hidden="true">+</span></div>
         <div className={styles.titleCaption} aria-hidden="true"><span>FORMED BY PARTICLES</span><span>CONNECTED BY CURIOSITY</span></div>
         <p className={styles.description}>Ideas take shape.<br /><span>A space for research, discovery, and what comes next.</span></p>
-        <button ref={entry} type="button" className={styles.entry} onClick={onEnter}><span className={styles.entryArrow} aria-hidden="true">↗</span> initiate_entry()<span className={styles.entryEnd} aria-hidden="true">↵</span></button>
+        <div className={styles.entrySpace} aria-hidden="true" />
+        <p id="greeting-help" className={styles.srOnly}>Click the background or press Enter or Space on the particle title to change the greeting.</p>
+        <p className={styles.srOnly} role="status" aria-live="polite">{greeting.phrase}</p>
         <p className={styles.hint}>MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p>
       </div>
 

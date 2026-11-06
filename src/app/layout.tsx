@@ -7,7 +7,6 @@ import { ThemeProvider } from '@/components/ui/ThemeProvider';
 import { LocaleProvider } from '@/components/ui/LocaleProvider';
 import { getConfig } from '@/lib/config';
 import { getRuntimeI18nConfig } from '@/lib/i18n/config';
-import type { SiteConfig } from '@/lib/config';
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = getConfig();
@@ -92,23 +91,19 @@ function buildLocaleBootstrapScript(config: ReturnType<typeof getRuntimeI18nConf
 function buildLocalizedConfigMaps(
   locales: string[]
 ): {
-  navigationByLocale: Record<string, SiteConfig['navigation']>;
   siteTitleByLocale: Record<string, string>;
   lastUpdatedByLocale: Record<string, string | undefined>;
 } {
-  const navigationByLocale: Record<string, SiteConfig['navigation']> = {};
   const siteTitleByLocale: Record<string, string> = {};
   const lastUpdatedByLocale: Record<string, string | undefined> = {};
 
   for (const locale of locales) {
     const localizedConfig = getConfig(locale);
-    navigationByLocale[locale] = localizedConfig.navigation;
     siteTitleByLocale[locale] = localizedConfig.site.title;
     lastUpdatedByLocale[locale] = localizedConfig.site.last_updated;
   }
 
   return {
-    navigationByLocale,
     siteTitleByLocale,
     lastUpdatedByLocale,
   };
@@ -124,7 +119,6 @@ export default function RootLayout({
   const targetLocales = runtimeI18n.enabled ? runtimeI18n.locales : [runtimeI18n.defaultLocale];
 
   const {
-    navigationByLocale,
     siteTitleByLocale,
     lastUpdatedByLocale,
   } = buildLocalizedConfigMaps(targetLocales);
@@ -171,23 +165,23 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <LocaleProvider config={runtimeI18n}>
-            <EntranceBoundary>
-            <Navigation
-              items={config.navigation}
-              siteTitle={config.site.title}
-              enableOnePageMode={config.features.enable_one_page_mode}
-              i18n={runtimeI18n}
-              itemsByLocale={navigationByLocale}
-              siteTitleByLocale={siteTitleByLocale}
-            />
-            <main tabIndex={-1} className="min-h-screen pt-16 lg:pt-20">
+            <EntranceBoundary
+              navigation={
+                <Navigation
+                  siteTitle={config.site.title}
+                  i18n={runtimeI18n}
+                  siteTitleByLocale={siteTitleByLocale}
+                />
+              }
+              footer={
+                <Footer
+                  lastUpdated={config.site.last_updated}
+                  lastUpdatedByLocale={lastUpdatedByLocale}
+                  defaultLocale={runtimeI18n.defaultLocale}
+                />
+              }
+            >
               {children}
-            </main>
-            <Footer
-              lastUpdated={config.site.last_updated}
-              lastUpdatedByLocale={lastUpdatedByLocale}
-              defaultLocale={runtimeI18n.defaultLocale}
-            />
             </EntranceBoundary>
           </LocaleProvider>
         </ThemeProvider>

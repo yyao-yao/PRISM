@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><title>Yao Yao — Standalone Portal Preview</title><style>
+<html lang="en" class="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><title>Yao Yao — Standalone Home Preview</title><style>
 *{box-sizing:border-box}body{margin:0;background:#f5f6f8}button{font:inherit}p,h1{margin-top:0}
 .portal {
   --portal-bg: #f5f6f8;
@@ -138,253 +138,413 @@
   .signal svg { animation: none; transform: none; }
 }
 
-.preview-label{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:101;font:9px/1.5 monospace;text-align:center;color:var(--portal-muted,#68758b);white-space:nowrap;pointer-events:none}.dark .preview-label{color:#8996aa}
-.review-page{min-height:100svh;display:grid;place-items:center;padding:32px;font:16px/1.7 Arial,sans-serif;color:#243148;background:#f5f6f8}.dark .review-page{background:#0b1019;color:#dce5f2}.review-card{max-width:560px}.review-card button{padding:14px 20px;cursor:pointer}.review-card small{font-family:monospace;color:#3678e8}.hidden{display:none!important}
-</style></head><body>
-<div class="review-page hidden" id="review-page"><div class="review-card"><small>STANDALONE DESIGN PREVIEW / STAGE 1.1</small><h1>Entry interaction complete.</h1><p>In the PRISM implementation, this button reveals the original academic homepage immediately. This standalone file contains only the portal design and particle interactions.</p><p>The two-panel door animation is reserved for Stage 2. Audio is not included.</p><button id="replay" type="button">↶ Replay portal</button></div></div>
-<section class="portal" id="portal" role="dialog" aria-modal="true" aria-labelledby="portal-title">
-<div class="signals" aria-hidden="true">
-        <span class="signal" data-signal data-glint><svg viewBox="0 0 16 16"><path d="M8 1.5 9.5 6.5 14.5 8 9.5 9.5 8 14.5 6.5 9.5 1.5 8 6.5 6.5Z" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 2 4.5 6L8 14 3.5 8Z" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 3 5.5 10h-11Z" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 8C1-1 15-1 8 8c9-7 9 7 0 0 7 9-7 9 0 0-9 7-9-7 0 0Z" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 2v12M2.8 5l10.4 6M2.8 11l10.4-6" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 13 2.8 7.8C-.5 4.5 4 .5 8 4c4-3.5 8.5.5 5.2 3.8Z" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 2 4 6-4 6-4-6Z" /></svg></span>
-        <span class="signal" data-signal data-glint><svg viewBox="0 0 16 16"><path d="m7 2 1.2 4.8L13 8l-4.8 1.2L7 14 5.8 9.2 1 8l4.8-1.2ZM13 1v3m-1.5-1.5h3" /></svg></span>
-        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 13 2.8 7.8C-.5 4.5 4 .5 8 4c4-3.5 8.5.5 5.2 3.8Z" /></svg></span>
+/* Route navigation and transparent keyboard target; approved scene rules above stay intact. */
+.homeNav { display: flex; align-items: center; gap: 19px; font: 10px 'SFMono-Regular', Consolas, monospace; }
+.homeNav a { color: var(--portal-muted); text-decoration: none; padding: 10px 0; }
+.homeNav a:hover, .homeNav a[aria-current='page'] { color: var(--portal-blue); }
+.homeNav a:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }
+.titleToggle { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; touch-action: pan-y; }
+.entrySpace { display: inline-flex; align-items: center; padding: 17px 21px; border: 1px solid transparent; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; font-size: 13px; visibility: hidden; pointer-events: none; }
+.entrySpace::before { content: '↗'; font-size: 18px; }
+@media (max-width: 1100px) {
+  .homeNav { position: absolute; top: 91px; left: 40px; right: 40px; justify-content: center; gap: 24px; }
+}
+@media (max-width: 700px) {
+  .homeNav { top: 133px; left: 20px; right: 20px; gap: 20px; font-size: 9px; }
+}
+@media (max-height: 650px) and (min-width: 701px) and (max-width: 1100px) {
+  .homeNav { top: 61px; left: 40px; right: 40px; gap: 18px; font-size: 9px; }
+}
+
+.preview-label{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:101;font:9px/1.5 monospace;text-align:center;color:var(--portal-muted,#68758b);white-space:nowrap;pointer-events:none}.dark .preview-label{color:#8996aa}.hidden{display:none!important}
+</style></head><body><main>
+<section id="portal" class="portal" aria-labelledby="portal-title">
+      <div class="signals" aria-hidden="true">
+        <span class="signal" data-signal data-glint><svg viewBox="0 0 16 16"><path d="M8 1.5 9.5 6.5 14.5 8 9.5 9.5 8 14.5 6.5 9.5 1.5 8 6.5 6.5Z"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 2 4.5 6L8 14 3.5 8Z"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 3v10M3 8h10"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 3 5.5 10h-11Z"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 8C1-1 15-1 8 8c9-7 9 7 0 0 7 9-7 9 0 0-9 7-9-7 0 0Z"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 2v12M2.8 5l10.4 6M2.8 11l10.4-6"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 13 2.8 7.8C-.5 4.5 4 .5 8 4c4-3.5 8.5.5 5.2 3.8Z"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="m8 2 4 6-4 6-4-6Z"></p></svg></span>
+        <span class="signal" data-signal data-glint><svg viewBox="0 0 16 16"><path d="m7 2 1.2 4.8L13 8l-4.8 1.2L7 14 5.8 9.2 1 8l4.8-1.2ZM13 1v3m-1.5-1.5h3"></p></svg></span>
+        <span class="signal" data-signal><svg viewBox="0 0 16 16"><path d="M8 13 2.8 7.8C-.5 4.5 4 .5 8 4c4-3.5 8.5.5 5.2 3.8Z"></p></svg></span>
       </div>
-<header class="header"><div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span><span class="muted">PERSONAL INTERFACE</span></div><div class="themes" role="group" aria-label="Color theme"><button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button></div></header>
-<div class="coordinates" aria-hidden="true"><span>INDEX — 001</span><span>EST. / ACADEMIC SPACE</span></div>
-<div class="content"><p class="eyebrow"><span class="statusDot"></span>A SMALL POINT OF ENTRY</p><h1 id="portal-title" class="srOnly">Yao Yao — academic website entrance</h1>
-<div class="title"><canvas id="particles" class="canvas" aria-hidden="true"></canvas><span class="fallback" id="fallback" aria-hidden="true">YAO YAO</span><span class="bracketLeft" aria-hidden="true">+</span><span class="bracketRight" aria-hidden="true">+</span></div>
-<div class="titleCaption" aria-hidden="true"><span>FORMED BY PARTICLES</span><span>CONNECTED BY CURIOSITY</span></div>
-<p class="description">Ideas take shape.<br><span>A space for research, discovery, and what comes next.</span></p>
-<button id="entry" class="entry" type="button"><span class="entryArrow" aria-hidden="true">↗</span> initiate_entry()<span class="entryEnd" aria-hidden="true">↵</span></button>
-<p class="hint">MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p></div>
-<div class="floating floatOne" aria-hidden="true"><i></i> FIELD / ACTIVE</div><div class="floating floatTwo" aria-hidden="true"><span class="cross">+</span> RESTORING EQUILIBRIUM</div><div class="orbit" aria-hidden="true"><span></span></div>
-<footer class="footer"><span><span class="statusDot"></span> SYSTEM READY</span><span class="footerMiddle">RESEARCH · THOUGHT · EXPLORATION</span><span>PRISM <span class="blue">/</span> 01</span></footer>
-</section><div class="preview-label" id="preview-label">STANDALONE VISUAL PREVIEW · STAGE 1.1<br>Local file · no deployment · no audio</div>
+      <header class="header">
+        <div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span> <span class="muted">PERSONAL INTERFACE</span></div>
+        <nav class="homeNav" aria-label="Primary navigation">
+          <a href="./prism-stage1-preview.html" aria-current="page" data-home-reset>Home</a><a href="/about/">About</a><a href="/publications/">Research</a><a href="/teaching/">Teaching</a><a href="/cv/">CV</a>
+        </nav>
+        <div class="themes" data-no-toggle role="group" aria-label="Color theme">
+          <button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button>
+        </div>
+      </header>
+
+      <div class="coordinates" aria-hidden="true"><span>INDEX — 001</span><span>EST. / ACADEMIC SPACE</span></div>
+      <div class="content">
+        <p class="eyebrow"><span class="statusDot"></span> A SMALL POINT OF ENTRY</p>
+        <h1 id="portal-title" class="srOnly">Yao Yao — Home</h1>
+        <div class="title"><button type="button" class="titleToggle" data-particle-toggle aria-label="Change particle greeting" aria-pressed="false" aria-describedby="greeting-help"><canvas id="particles" class="canvas" aria-hidden="true"></canvas><span id="fallback" class="fallback" aria-hidden="true">YAO YAO</span></button><span class="bracketLeft" aria-hidden="true">+</span><span class="bracketRight" aria-hidden="true">+</span></div>
+        <div class="titleCaption" aria-hidden="true"><span>FORMED BY PARTICLES</span><span>CONNECTED BY CURIOSITY</span></div>
+        <p class="description">Ideas take shape.<br /><span>A space for research, discovery, and what comes next.</span></p>
+        <div class="entrySpace" aria-hidden="true"></div>
+        <p id="greeting-help" class="srOnly">Click the background or press Enter or Space on the particle title to change the greeting.</p>
+        <p class="srOnly" role="status" aria-live="polite">YAO YAO</p>
+        <p class="hint">MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p>
+      </div>
+
+      <div class="floating floatOne" aria-hidden="true"><i></i> FIELD / ACTIVE</div>
+      <div class="floating floatTwo" aria-hidden="true"><span class="cross">+</span> RESTORING EQUILIBRIUM</div>
+      <div class="orbit" aria-hidden="true"><span></span></div>
+      <footer class="footer"><span><span class="statusDot"></span> SYSTEM READY</span><span class="footerMiddle">RESEARCH · THOUGHT · EXPLORATION</span><span>PRISM <span class="blue">/</span> 01</span></footer>
+    </section>
+</main><div class="preview-label">STANDALONE HOME PREVIEW<br>Local file · no deployment · no audio</div>
 <script>
 const canvas={current:document.getElementById('particles')};
+const desired={current:'YAO YAO'};
+const engine={current:null};
 const setReady=ready=>document.getElementById('fallback').classList.toggle('hidden',ready);
-                                                                                                                              
-
-
-function setup(){
+function setup() {
     const element = canvas.current;
     const context = element?.getContext('2d');
-    if (!element || !context) return;
+    if (!element || !context)
+        return;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    let particles             = [];
+    let particles = [];
+    let targets;
+    let activePhrase = desired.current;
+    let morph = null;
+    const duration = 1300;
+    const smooth = (t) => t * t * t * (t * (t * 6 - 15) + 10);
+    const clamp = (t) => Math.max(0, Math.min(1, t));
     let width = 0;
     let height = 0;
     let frame = 0;
     let lastTime = 0;
-    let pointer                       = null;
-    let wakes         = [];
+    let pointer = null;
+    let wakes = [];
     const wakeLifetime = 100;
     const maxWakes = 4;
     let ink = '#243148';
     let accent = '#3678e8';
-
     const draw = () => {
-      context.clearRect(0, 0, width, height);
-      for (const p of particles) {
-        context.fillStyle = p.blue ? accent : ink;
-        context.globalAlpha = p.blue ? 0.8 : 0.66 + p.size * 0.12;
-        context.beginPath();
-        context.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        context.fill();
-      }
-      context.globalAlpha = 1;
+        context.clearRect(0, 0, width, height);
+        for (const p of particles) {
+            if (p.alpha < 0.001)
+                continue;
+            context.fillStyle = p.blue ? accent : ink;
+            context.globalAlpha = (p.blue ? 0.8 : 0.66 + p.size * 0.12) * p.alpha;
+            context.beginPath();
+            context.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            context.fill();
+        }
+        context.globalAlpha = 1;
     };
-
     const colors = () => {
-      const css = getComputedStyle(element);
-      ink = css.getPropertyValue('--portal-ink').trim() || ink;
-      accent = css.getPropertyValue('--portal-blue').trim() || accent;
-      draw();
+        const css = getComputedStyle(element);
+        ink = css.getPropertyValue('--portal-ink').trim() || ink;
+        accent = css.getPropertyValue('--portal-blue').trim() || accent;
+        draw();
     };
-
+    const sampleText = (label) => {
+        const mask = document.createElement('canvas');
+        mask.width = Math.ceil(width);
+        mask.height = Math.ceil(height);
+        const text = mask.getContext('2d');
+        if (!text)
+            return [];
+        text.font = `900 ${width * 0.205}px Arial, sans-serif`;
+        const measure = text.measureText(label);
+        const scale = width * 0.94 / measure.width;
+        text.font = `900 ${width * 0.205 * scale}px Arial, sans-serif`;
+        text.textAlign = 'center';
+        text.textBaseline = 'middle';
+        text.fillText(label, width / 2, height * 0.51);
+        const pixels = text.getImageData(0, 0, mask.width, mask.height).data;
+        // Adaptive sampling keeps thousands of dots without a DOM node per particle.
+        const spacing = Math.max(1.65, width / 310);
+        const points = [];
+        for (let y = spacing; y < height; y += spacing) {
+            for (let x = spacing; x < width; x += spacing) {
+                if (pixels[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] < 150)
+                    continue;
+                const jitter = () => (Math.random() - 0.5) * spacing * 0.32;
+                const homeX = x + jitter();
+                const homeY = y + jitter();
+                points.push({ x: homeX, y: homeY, size: spacing * (0.22 + Math.random() * 0.12), blue: Math.random() < 0.075 });
+            }
+        }
+        // Sorting complete seeds changes no visible dot: positions, radii and blue
+        // assignments stay paired exactly as in the approved sampling algorithm.
+        return points.sort((a, b) => a.x - b.x || a.y - b.y);
+    };
+    const assignTargets = (points, count) => {
+        const result = Array.from({ length: count }, (_, i) => ({
+            seed: points[Math.min(points.length - 1, Math.floor(i * points.length / count))], alpha: 0,
+        }));
+        // Distribute active slots across the whole pool so count changes never
+        // remove one half of a letter field or stack surplus dots in the new text.
+        points.forEach((seed, i) => { result[Math.floor(i * count / points.length)] = { seed, alpha: 1 }; });
+        return result;
+    };
+    const settle = () => {
+        morph = null;
+        particles.forEach((p, i) => {
+            const target = targets[activePhrase][i];
+            p.x = p.homeX = target.seed.x;
+            p.y = p.homeY = target.seed.y;
+            p.vx = p.vy = 0;
+            p.alpha = target.alpha;
+            p.path = undefined;
+        });
+        element.dataset.morphState = 'settled';
+    };
     const resize = () => {
-      const rect = element.getBoundingClientRect();
-      width = rect.width;
-      height = rect.height;
-      pointer = null;
-      wakes = [];
-      if (!width || !height) return;
-      const ratio = Math.min(window.devicePixelRatio || 1, 2);
-      element.width = Math.round(width * ratio);
-      element.height = Math.round(height * ratio);
-      context.setTransform(ratio, 0, 0, ratio, 0, 0);
-      const mask = document.createElement('canvas');
-      mask.width = Math.ceil(width);
-      mask.height = Math.ceil(height);
-      const text = mask.getContext('2d');
-      if (!text) return;
-      text.font = `900 ${width * 0.205}px Arial, sans-serif`;
-      const measure = text.measureText('YAO YAO');
-      const scale = width * 0.94 / measure.width;
-      text.font = `900 ${width * 0.205 * scale}px Arial, sans-serif`;
-      text.textAlign = 'center';
-      text.textBaseline = 'middle';
-      text.fillText('YAO YAO', width / 2, height * 0.51);
-      const pixels = text.getImageData(0, 0, mask.width, mask.height).data;
-      // Adaptive sampling keeps thousands of dots without a DOM node per particle.
-      const spacing = Math.max(1.65, width / 310);
-      particles = [];
-      for (let y = spacing; y < height; y += spacing) {
-        for (let x = spacing; x < width; x += spacing) {
-          if (pixels[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] < 150) continue;
-          const jitter = () => (Math.random() - 0.5) * spacing * 0.32;
-          const homeX = x + jitter();
-          const homeY = y + jitter();
-          particles.push({ x: homeX, y: homeY, homeX, homeY, vx: 0, vy: 0, size: spacing * (0.22 + Math.random() * 0.12), blue: Math.random() < 0.075 });
-        }
-      }
-      colors();
-      setReady(true);
-      start();
+        const rect = element.getBoundingClientRect();
+        width = rect.width;
+        height = rect.height;
+        pointer = null;
+        wakes = [];
+        if (!width || !height)
+            return;
+        const ratio = Math.min(window.devicePixelRatio || 1, 2);
+        element.width = Math.round(width * ratio);
+        element.height = Math.round(height * ratio);
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+        activePhrase = desired.current;
+        const name = sampleText('YAO YAO');
+        const greeting = sampleText('Nice to meet you.');
+        const count = Math.max(name.length, greeting.length);
+        if (!count || !name.length || !greeting.length)
+            return;
+        targets = { 'YAO YAO': assignTargets(name, count), 'Nice to meet you.': assignTargets(greeting, count) };
+        particles = targets[activePhrase].map((target, i) => {
+            const seed = targets['YAO YAO'][i].alpha ? targets['YAO YAO'][i].seed : targets['Nice to meet you.'][i].seed;
+            return { x: target.seed.x, y: target.seed.y, homeX: target.seed.x, homeY: target.seed.y,
+                vx: 0, vy: 0, alpha: target.alpha, size: seed.size, blue: seed.blue };
+        });
+        settle();
+        element.dataset.phrase = activePhrase;
+        colors();
+        setReady(true);
+        start();
     };
-
-    const animate = (time        ) => {
-      const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
-      lastTime = time;
-      // Keep the original independent scatter and spring, with only a small
-      // directional stretch and shear at the edge of the pointer disturbance.
-      const baseRadius = Math.min(115, Math.max(55, width * 0.12));
-      const motionScale = Math.min(1, width / 700);
-      const travel = Math.max(14, Math.min(30, width * 0.045));
-      wakes = wakes.filter(wake => time - wake.time < wakeLifetime);
-      const sources = wakes.map(wake => {
-        const slow = 1 / (1 + wake.speed / 0.55);
-        return { ...wake, radius: baseRadius * (1 + slow * 0.1),
-          gain: 0.85 + slow * 0.25,
-          fade: Math.max(0, 1 - (time - wake.time) / wakeLifetime) ** 2 * 0.65,
-          moving: Math.min(1, wake.speed / 0.12) };
-      });
-      if (pointer) {
-        const speed = Math.hypot(pointer.vx, pointer.vy);
-        const slow = 1 / (1 + speed / 0.55);
-        // A pause fades the disturbance instead of maintaining a circular hole.
-        // Slow brushing is a little fuller and lingers longer than fast strokes.
-        const fade = Math.max(0, 1 - (time - pointer.time) / (260 + slow * 320)) ** 2;
-        if (fade > 0) sources.push({ ax: pointer.x, ay: pointer.y, dx: 0, dy: 0,
-          lengthSquared: 1, ux: speed > 0.001 ? pointer.vx / speed : 0,
-          uy: speed > 0.001 ? pointer.vy / speed : 0, speed, time: pointer.time,
-          radius: baseRadius * (1 + slow * 0.1), gain: 0.85 + slow * 0.25,
-          fade, moving: Math.min(1, speed / 0.12) });
-      }
-      const steps = Math.max(1, Math.ceil(dt * 2));
-      const step = dt / steps;
-      const damping = Math.pow(0.88, step);
-      let unsettled = sources.length > 0;
-      for (const p of particles) {
-        let forceX = 0;
-        let forceY = 0;
-        let weightSum = 0;
-        let peak = 0;
-        for (const source of sources) {
-          // Project onto the brief swept segment so sparse/fast events still
-          // brush particles between positions. No shared group-advection field.
-          const alongSegment = Math.max(0, Math.min(1,
-            ((p.x - source.ax) * source.dx + (p.y - source.ay) * source.dy) / source.lengthSquared));
-          const dx = p.x - source.ax - source.dx * alongSegment;
-          const dy = p.y - source.ay - source.dy * alongSegment;
-          const distanceSquared = dx * dx + dy * dy;
-          if (distanceSquared > source.radius * source.radius * 8) continue;
-          const along = dx * source.ux + dy * source.uy;
-          const across = dx * -source.uy + dy * source.ux;
-          const behind = 0.5 - along / (2 * (Math.abs(along) + source.radius * 0.3));
-          const stretch = 1 + 0.24 * behind * source.moving;
-          const qSquared = (along * along / (stretch * stretch) + across * across) / (source.radius * source.radius);
-          // With no direction yet, retain a soft, round initial touch.
-          const q = source.ux || source.uy ? qSquared : distanceSquared / (source.radius * source.radius);
-          // Preserve the older quadratic repulsion profile; just feather its
-          // perimeter with a faint tail instead of replacing the whole motion.
-          const core = Math.max(0, 1 - Math.sqrt(q));
-          const weight = (core * core + 0.022 * Math.exp(-q * 4)) * source.fade * source.gain;
-          const distance = Math.sqrt(distanceSquared + 16);
-          // Outward scatter is dominant, just like the earlier version. The
-          // tiny drag lives only in the skirt, like water brushed by a fingertip.
-          const skirt = q * Math.exp(-q * 3) * source.moving;
-          const slip = 0.06 * skirt;
-          const curl = 0.025 * skirt * across / source.radius;
-          forceX += (dx / distance * 0.82 + source.ux * slip - source.uy * curl) * weight;
-          forceY += (dy / distance * 0.82 + source.uy * slip + source.ux * curl) * weight;
-          weightSum += weight;
-          peak = Math.max(peak, weight);
+    const setPhrase = (next, animated) => {
+        desired.current = next;
+        if (!targets)
+            return;
+        if (next === activePhrase && animated)
+            return;
+        activePhrase = next;
+        element.dataset.phrase = next;
+        if (!animated || reducedMotion.matches || document.hidden) {
+            settle();
+            draw();
+            return;
         }
-        // Overlapping path samples blend without multiplying the disturbance.
-        const strength = weightSum > 0 ? motionScale * peak / weightSum : 0;
-        for (let i = 0; i < steps; i++) {
-          const offsetX = p.x - p.homeX;
-          const offsetY = p.y - p.homeY;
-          // The original spring is unchanged through ordinary motion. A soft
-          // guard beyond that range keeps long slow strokes from pulling text apart.
-          const excess = Math.max(0, (offsetX * offsetX + offsetY * offsetY) / (travel * travel) - 1);
-          const spring = 0.013 * (1 + excess * excess);
-          p.vx = (p.vx + (forceX * strength - offsetX * spring) * step) * damping;
-          p.vy = (p.vy + (forceY * strength - offsetY * spring) * step) * damping;
-          p.x += p.vx * step;
-          p.y += p.vy * step;
+        particles.forEach((p, i) => {
+            const target = targets[next][i];
+            const dx = target.seed.x - p.homeX;
+            const dy = target.seed.y - p.homeY;
+            const length = Math.hypot(dx, dy) || 1;
+            const angle = i * 2.3999632297;
+            p.path = { fromX: p.homeX, fromY: p.homeY, toX: target.seed.x, toY: target.seed.y,
+                fromAlpha: p.alpha, toAlpha: target.alpha, nx: -dy / length, ny: dx / length,
+                bend: (i % 2 ? 1 : -1) * Math.min(28, 8 + length * 0.07), loosenX: Math.cos(angle) * 9, loosenY: Math.sin(angle) * 7,
+                delay: (i % 17) / 17 * 0.055 };
+        });
+        morph = { started: performance.now() };
+        element.dataset.morphState = 'flowing';
+        if (!frame) {
+            lastTime = performance.now();
+            frame = requestAnimationFrame(animate);
         }
-        const distanceSquared = (p.x - p.homeX) ** 2 + (p.y - p.homeY) ** 2;
-        if (distanceSquared > 0.0001 || p.vx * p.vx + p.vy * p.vy > 0.0001) unsettled = true;
-        else if (!sources.length) { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; }
-      }
-      draw();
-      // Once calm, leave a static canvas rather than repainting identical dots.
-      frame = unsettled ? requestAnimationFrame(animate) : 0;
-      if (!unsettled) lastTime = 0;
+    };
+    const updateMorph = (time) => {
+        if (!morph)
+            return;
+        const progress = clamp((time - morph.started) / duration);
+        for (const p of particles) {
+            const path = p.path;
+            if (!path)
+                continue;
+            const t = clamp((progress - path.delay) / (1 - path.delay));
+            const travel = smooth(clamp((t - 0.12) / 0.76));
+            const arc = Math.sin(Math.PI * travel);
+            const loosen = Math.sin(Math.PI * clamp(t / 0.35)) * (1 - travel);
+            const x = progress === 1 ? path.toX : path.fromX + (path.toX - path.fromX) * travel + path.nx * path.bend * arc + path.loosenX * loosen;
+            const y = progress === 1 ? path.toY : path.fromY + (path.toY - path.fromY) * travel + path.ny * path.bend * arc + path.loosenY * loosen;
+            // Transport the reference point only. Mouse displacement and velocity
+            // remain intact, and the approved mouse-force integration below is unchanged.
+            p.x += x - p.homeX;
+            p.y += y - p.homeY;
+            p.homeX = x;
+            p.homeY = y;
+            p.alpha = progress === 1 ? path.toAlpha : path.fromAlpha + (path.toAlpha - path.fromAlpha) * smooth(t);
+            if (progress === 1)
+                p.path = undefined;
+        }
+        if (progress === 1) {
+            morph = null;
+            element.dataset.morphState = 'settled';
+        }
+    };
+    const animate = (time) => {
+        const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
+        lastTime = time;
+        updateMorph(time);
+        // Keep the original independent scatter and spring, with only a small
+        // directional stretch and shear at the edge of the pointer disturbance.
+        const baseRadius = Math.min(115, Math.max(55, width * 0.12));
+        const motionScale = Math.min(1, width / 700);
+        const travel = Math.max(14, Math.min(30, width * 0.045));
+        wakes = wakes.filter(wake => time - wake.time < wakeLifetime);
+        const sources = wakes.map(wake => {
+            const slow = 1 / (1 + wake.speed / 0.55);
+            return { ...wake, radius: baseRadius * (1 + slow * 0.1),
+                gain: 0.85 + slow * 0.25,
+                fade: Math.max(0, 1 - (time - wake.time) / wakeLifetime) ** 2 * 0.65,
+                moving: Math.min(1, wake.speed / 0.12) };
+        });
+        if (pointer) {
+            const speed = Math.hypot(pointer.vx, pointer.vy);
+            const slow = 1 / (1 + speed / 0.55);
+            // A pause fades the disturbance instead of maintaining a circular hole.
+            // Slow brushing is a little fuller and lingers longer than fast strokes.
+            const fade = Math.max(0, 1 - (time - pointer.time) / (260 + slow * 320)) ** 2;
+            if (fade > 0)
+                sources.push({ ax: pointer.x, ay: pointer.y, dx: 0, dy: 0,
+                    lengthSquared: 1, ux: speed > 0.001 ? pointer.vx / speed : 0,
+                    uy: speed > 0.001 ? pointer.vy / speed : 0, speed, time: pointer.time,
+                    radius: baseRadius * (1 + slow * 0.1), gain: 0.85 + slow * 0.25,
+                    fade, moving: Math.min(1, speed / 0.12) });
+        }
+        const steps = Math.max(1, Math.ceil(dt * 2));
+        const step = dt / steps;
+        const damping = Math.pow(0.88, step);
+        let unsettled = sources.length > 0 || morph !== null;
+        for (const p of particles) {
+            if (p.alpha === 0 && !morph)
+                continue;
+            let forceX = 0;
+            let forceY = 0;
+            let weightSum = 0;
+            let peak = 0;
+            for (const source of sources) {
+                // Project onto the brief swept segment so sparse/fast events still
+                // brush particles between positions. No shared group-advection field.
+                const alongSegment = Math.max(0, Math.min(1, ((p.x - source.ax) * source.dx + (p.y - source.ay) * source.dy) / source.lengthSquared));
+                const dx = p.x - source.ax - source.dx * alongSegment;
+                const dy = p.y - source.ay - source.dy * alongSegment;
+                const distanceSquared = dx * dx + dy * dy;
+                if (distanceSquared > source.radius * source.radius * 8)
+                    continue;
+                const along = dx * source.ux + dy * source.uy;
+                const across = dx * -source.uy + dy * source.ux;
+                const behind = 0.5 - along / (2 * (Math.abs(along) + source.radius * 0.3));
+                const stretch = 1 + 0.24 * behind * source.moving;
+                const qSquared = (along * along / (stretch * stretch) + across * across) / (source.radius * source.radius);
+                // With no direction yet, retain a soft, round initial touch.
+                const q = source.ux || source.uy ? qSquared : distanceSquared / (source.radius * source.radius);
+                // Preserve the older quadratic repulsion profile; just feather its
+                // perimeter with a faint tail instead of replacing the whole motion.
+                const core = Math.max(0, 1 - Math.sqrt(q));
+                const weight = (core * core + 0.022 * Math.exp(-q * 4)) * source.fade * source.gain;
+                const distance = Math.sqrt(distanceSquared + 16);
+                // Outward scatter is dominant, just like the earlier version. The
+                // tiny drag lives only in the skirt, like water brushed by a fingertip.
+                const skirt = q * Math.exp(-q * 3) * source.moving;
+                const slip = 0.06 * skirt;
+                const curl = 0.025 * skirt * across / source.radius;
+                forceX += (dx / distance * 0.82 + source.ux * slip - source.uy * curl) * weight;
+                forceY += (dy / distance * 0.82 + source.uy * slip + source.ux * curl) * weight;
+                weightSum += weight;
+                peak = Math.max(peak, weight);
+            }
+            // Overlapping path samples blend without multiplying the disturbance.
+            const strength = weightSum > 0 ? motionScale * peak / weightSum : 0;
+            for (let i = 0; i < steps; i++) {
+                const offsetX = p.x - p.homeX;
+                const offsetY = p.y - p.homeY;
+                // The original spring is unchanged through ordinary motion. A soft
+                // guard beyond that range keeps long slow strokes from pulling text apart.
+                const excess = Math.max(0, (offsetX * offsetX + offsetY * offsetY) / (travel * travel) - 1);
+                const spring = 0.013 * (1 + excess * excess);
+                p.vx = (p.vx + (forceX * strength - offsetX * spring) * step) * damping;
+                p.vy = (p.vy + (forceY * strength - offsetY * spring) * step) * damping;
+                p.x += p.vx * step;
+                p.y += p.vy * step;
+            }
+            const distanceSquared = (p.x - p.homeX) ** 2 + (p.y - p.homeY) ** 2;
+            if (distanceSquared > 0.0001 || p.vx * p.vx + p.vy * p.vy > 0.0001)
+                unsettled = true;
+            else if (!sources.length) {
+                p.x = p.homeX;
+                p.y = p.homeY;
+                p.vx = p.vy = 0;
+            }
+        }
+        draw();
+        // Once calm, leave a static canvas rather than repainting identical dots.
+        frame = unsettled ? requestAnimationFrame(animate) : 0;
+        if (!unsettled)
+            lastTime = 0;
     };
     const start = () => {
-      cancelAnimationFrame(frame);
-      frame = 0;
-      lastTime = 0;
-      pointer = null;
-      wakes = [];
-      if (reducedMotion.matches || document.hidden) {
-        particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
-        draw();
-      } else frame = requestAnimationFrame(animate);
+        cancelAnimationFrame(frame);
+        frame = 0;
+        lastTime = 0;
+        pointer = null;
+        wakes = [];
+        if (reducedMotion.matches || document.hidden) {
+            if (morph)
+                settle();
+            particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
+            draw();
+        }
+        else
+            frame = requestAnimationFrame(animate);
     };
-    const move = (event              ) => {
-      if (event.pointerType === 'touch' || reducedMotion.matches || document.hidden) return;
-      const rect = element.getBoundingClientRect();
-      const coalesced = event.getCoalescedEvents?.();
-      const samples = coalesced?.length ? coalesced : [event];
-      const count = Math.min(samples.length, 8);
-      for (let i = 0; i < count; i++) {
-        const sample = samples[count === 1 ? 0 : Math.round(i * (samples.length - 1) / (count - 1))];
-        const x = sample.clientX - rect.left;
-        const y = sample.clientY - rect.top;
-        const time = sample.timeStamp;
-        if (pointer) {
-          const dx = x - pointer.x;
-          const dy = y - pointer.y;
-          const length = Math.hypot(dx, dy);
-          // Duplicate/stationary samples never sustain an empty region.
-          if (length < 0.1) continue;
-          const gap = time - pointer.time;
-          const elapsed = Math.max(4, Math.min(40, gap));
-          const blend = 1 - Math.exp(-elapsed / 24);
-          const memory = Math.exp(-Math.max(0, gap - 40) / 60);
-          const vx = pointer.vx * memory * (1 - blend) + dx / elapsed * blend;
-          const vy = pointer.vy * memory * (1 - blend) + dy / elapsed * blend;
-          const speed = Math.hypot(vx, vy) * 0.65 + length / elapsed * 0.35;
-          wakes.push({ ax: pointer.x, ay: pointer.y, dx, dy, lengthSquared: length * length,
-            ux: dx / length, uy: dy / length, speed, time });
-          if (wakes.length > maxWakes) wakes.shift();
-          pointer = { x, y, time, vx, vy };
-        } else pointer = { x, y, time, vx: 0, vy: 0 };
-      }
-      if (pointer && !frame) {
-        lastTime = performance.now();
-        frame = requestAnimationFrame(animate);
-      }
+    const move = (event) => {
+        if (event.pointerType === 'touch' || reducedMotion.matches || document.hidden)
+            return;
+        const rect = element.getBoundingClientRect();
+        const coalesced = event.getCoalescedEvents?.();
+        const samples = coalesced?.length ? coalesced : [event];
+        const count = Math.min(samples.length, 8);
+        for (let i = 0; i < count; i++) {
+            const sample = samples[count === 1 ? 0 : Math.round(i * (samples.length - 1) / (count - 1))];
+            const x = sample.clientX - rect.left;
+            const y = sample.clientY - rect.top;
+            const time = sample.timeStamp;
+            if (pointer) {
+                const dx = x - pointer.x;
+                const dy = y - pointer.y;
+                const length = Math.hypot(dx, dy);
+                // Duplicate/stationary samples never sustain an empty region.
+                if (length < 0.1)
+                    continue;
+                const gap = time - pointer.time;
+                const elapsed = Math.max(4, Math.min(40, gap));
+                const blend = 1 - Math.exp(-elapsed / 24);
+                const memory = Math.exp(-Math.max(0, gap - 40) / 60);
+                const vx = pointer.vx * memory * (1 - blend) + dx / elapsed * blend;
+                const vy = pointer.vy * memory * (1 - blend) + dy / elapsed * blend;
+                const speed = Math.hypot(vx, vy) * 0.65 + length / elapsed * 0.35;
+                wakes.push({ ax: pointer.x, ay: pointer.y, dx, dy, lengthSquared: length * length,
+                    ux: dx / length, uy: dy / length, speed, time });
+                if (wakes.length > maxWakes)
+                    wakes.shift();
+                pointer = { x, y, time, vx, vy };
+            }
+            else
+                pointer = { x, y, time, vx: 0, vy: 0 };
+        }
+        if (pointer && !frame) {
+            lastTime = performance.now();
+            frame = requestAnimationFrame(animate);
+        }
     };
     const leave = () => { pointer = null; };
     const observer = new ResizeObserver(resize);
@@ -396,149 +556,219 @@ function setup(){
     window.addEventListener('blur', leave);
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', start);
+    engine.current = { setPhrase };
     resize();
     return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      themeObserver.disconnect();
-      window.removeEventListener('pointermove', move);
-      document.documentElement.removeEventListener('pointerleave', leave);
-      window.removeEventListener('blur', leave);
-      document.removeEventListener('visibilitychange', start);
-      reducedMotion.removeEventListener('change', start);
+        engine.current = null;
+        cancelAnimationFrame(frame);
+        observer.disconnect();
+        themeObserver.disconnect();
+        window.removeEventListener('pointermove', move);
+        document.documentElement.removeEventListener('pointerleave', leave);
+        window.removeEventListener('blur', leave);
+        document.removeEventListener('visibilitychange', start);
+        reducedMotion.removeEventListener('change', start);
     };
-
 }
-globalThis.setup=setup;
+
 /** Independent breathing and separately scheduled, stochastic twinkle events. */
-function animateSignals(container             )             {
-  const markers = Array.from(container.querySelectorAll             ('[data-signal]'));
-  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const animations = new Set           ();
-  const timers = new Set        ();
-  const driftStates = new Map                                                    ();
-  let generation = 0;
-
-  function breathe(symbol               , version        , first         ) {
-    if (version !== generation) return;
-    const duration = 2500 + Math.random() * 2000;
-    // SVG scale/translate compose with CSS drift; its opacity can only dim the
-    // outer star. Neither layer changes the resting opacity or transform.
-    const animation = symbol.animate([
-      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0 },
-      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.12 },
-      { opacity: 1, scale: String(1.06 + Math.random() * 0.04), translate: '0.45px -0.65px', offset: 0.35 + Math.random() * 0.08 },
-      { opacity: 0.9 + Math.random() * 0.04, scale: String(0.93 + Math.random() * 0.03), translate: '-0.35px 0.45px', offset: 0.64 + Math.random() * 0.08 },
-      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.9 },
-      { opacity: 1, scale: '1', translate: '0px 0px', offset: 1 },
-    ].map(frame => ({ ...frame, easing: 'ease-in-out' })),
-    { duration, delay: first ? -Math.random() * duration * 0.35 : 0, easing: 'linear' });
-    animation.id = 'signal-breath';
-    animations.add(animation);
-    animation.finished.then(() => {
-      animations.delete(animation);
-      breathe(symbol, version, false);
-    }).catch(() => { animations.delete(animation); });
-  }
-
-  function scheduleTwinkle(marker             , version        , paired = false) {
-    if (version !== generation) return;
-    // The optional second event is smaller and separated by a calm pause. It
-    // cannot chain into a burst: paired events always return to the normal wait.
-    const wait = paired ? 1500 + Math.random() * 500 : 1500 + Math.random() * 3500;
-    const timer = window.setTimeout(() => {
-      timers.delete(timer);
-      if (version === generation) twinkle(marker, version, paired);
-    }, wait);
-    timers.add(timer);
-  }
-
-  function twinkle(marker             , version        , paired         ) {
-    if (version !== generation) return;
-    const fadeIn = 200 + Math.random() * 300;
-    const hold = 100 + Math.random() * 200;
-    const fadeOut = 500 + Math.random() * 500;
-    const duration = fadeIn + hold + fadeOut;
-    const glint = !paired && marker.hasAttribute('data-glint') && Math.random() < 0.35;
-    const peak = paired ? 0.5 + Math.random() * 0.13 : glint ? 0.9 + Math.random() * 0.05 : 0.64 + Math.random() * 0.14;
-    const blur = paired ? 0.5 + Math.random() : glint ? 3.5 + Math.random() * 1.5 : 0.7 + Math.random() * 1.1;
-    const clear = 'drop-shadow(0 0 0px currentColor)';
-    const glow = `drop-shadow(0 0 ${blur}px currentColor)`;
-    // Opacity/glow stay on the wrapper; breathing stays on the SVG. Restoring
-    // opacity 0.3 and clearing the glow avoids a permanently brighter light theme.
-    const animation = marker.animate([
-      { opacity: 0.3, filter: clear, offset: 0 },
-      { opacity: peak, filter: glow, offset: fadeIn / duration },
-      { opacity: peak, filter: glow, offset: (fadeIn + hold) / duration },
-      { opacity: 0.3, filter: clear, offset: 1 },
-    ].map(frame => ({ ...frame, easing: 'ease-in-out' })), { duration, easing: 'linear' });
-    animation.id = 'signal-twinkle';
-    animations.add(animation);
-    animation.finished.then(() => {
-      animations.delete(animation);
-      scheduleTwinkle(marker, version, !paired && Math.random() < 0.12);
-    }).catch(() => { animations.delete(animation); });
-  }
-
-  function stop() {
-    generation++;
-    for (const timer of timers) window.clearTimeout(timer);
-    timers.clear();
-    for (const animation of animations) animation.cancel();
-    animations.clear();
-  }
-
-  function pauseDrift(paused         ) {
-    for (const marker of markers) {
-      const symbol = marker.querySelector('svg');
-      if (!symbol) continue;
-      if (paused) {
-        if (!driftStates.has(symbol)) driftStates.set(symbol, {
-          value: symbol.style.getPropertyValue('animation-play-state'),
-          priority: symbol.style.getPropertyPriority('animation-play-state'),
-        });
-        symbol.style.setProperty('animation-play-state', 'paused');
-      } else {
-        const previous = driftStates.get(symbol);
-        if (!previous) continue;
-        if (previous.value) symbol.style.setProperty('animation-play-state', previous.value, previous.priority);
-        else symbol.style.removeProperty('animation-play-state');
-        driftStates.delete(symbol);
-      }
+function animateSignals(container) {
+    const markers = Array.from(container.querySelectorAll('[data-signal]'));
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const animations = new Set();
+    const timers = new Set();
+    const driftStates = new Map();
+    let generation = 0;
+    function breathe(symbol, version, first) {
+        if (version !== generation)
+            return;
+        const duration = 2500 + Math.random() * 2000;
+        // SVG scale/translate compose with CSS drift; its opacity can only dim the
+        // outer star. Neither layer changes the resting opacity or transform.
+        const animation = symbol.animate([
+            { opacity: 1, scale: '1', translate: '0px 0px', offset: 0 },
+            { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.12 },
+            { opacity: 1, scale: String(1.06 + Math.random() * 0.04), translate: '0.45px -0.65px', offset: 0.35 + Math.random() * 0.08 },
+            { opacity: 0.9 + Math.random() * 0.04, scale: String(0.93 + Math.random() * 0.03), translate: '-0.35px 0.45px', offset: 0.64 + Math.random() * 0.08 },
+            { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.9 },
+            { opacity: 1, scale: '1', translate: '0px 0px', offset: 1 },
+        ].map(frame => ({ ...frame, easing: 'ease-in-out' })), { duration, delay: first ? -Math.random() * duration * 0.35 : 0, easing: 'linear' });
+        animation.id = 'signal-breath';
+        animations.add(animation);
+        animation.finished.then(() => {
+            animations.delete(animation);
+            breathe(symbol, version, false);
+        }).catch(() => { animations.delete(animation); });
     }
-  }
-
-  function sync() {
-    stop();
-    const paused = media.matches || document.hidden;
-    pauseDrift(paused);
-    if (paused) return;
-    for (const marker of markers) {
-      if (typeof marker.animate === 'function') scheduleTwinkle(marker, generation);
-      const symbol = marker.querySelector('svg');
-      if (symbol && typeof symbol.animate === 'function') breathe(symbol, generation, true);
+    function scheduleTwinkle(marker, version, paired = false) {
+        if (version !== generation)
+            return;
+        // The optional second event is smaller and separated by a calm pause. It
+        // cannot chain into a burst: paired events always return to the normal wait.
+        const wait = paired ? 1500 + Math.random() * 500 : 1500 + Math.random() * 3500;
+        const timer = window.setTimeout(() => {
+            timers.delete(timer);
+            if (version === generation)
+                twinkle(marker, version, paired);
+        }, wait);
+        timers.add(timer);
     }
-  }
-
-  media.addEventListener('change', sync);
-  document.addEventListener('visibilitychange', sync);
-  sync();
-  return () => {
-    stop();
-    pauseDrift(false);
-    media.removeEventListener('change', sync);
-    document.removeEventListener('visibilitychange', sync);
-  };
+    function twinkle(marker, version, paired) {
+        if (version !== generation)
+            return;
+        const fadeIn = 200 + Math.random() * 300;
+        const hold = 100 + Math.random() * 200;
+        const fadeOut = 500 + Math.random() * 500;
+        const duration = fadeIn + hold + fadeOut;
+        const glint = !paired && marker.hasAttribute('data-glint') && Math.random() < 0.35;
+        const peak = paired ? 0.5 + Math.random() * 0.13 : glint ? 0.9 + Math.random() * 0.05 : 0.64 + Math.random() * 0.14;
+        const blur = paired ? 0.5 + Math.random() : glint ? 3.5 + Math.random() * 1.5 : 0.7 + Math.random() * 1.1;
+        const clear = 'drop-shadow(0 0 0px currentColor)';
+        const glow = `drop-shadow(0 0 ${blur}px currentColor)`;
+        // Opacity/glow stay on the wrapper; breathing stays on the SVG. Restoring
+        // opacity 0.3 and clearing the glow avoids a permanently brighter light theme.
+        const animation = marker.animate([
+            { opacity: 0.3, filter: clear, offset: 0 },
+            { opacity: peak, filter: glow, offset: fadeIn / duration },
+            { opacity: peak, filter: glow, offset: (fadeIn + hold) / duration },
+            { opacity: 0.3, filter: clear, offset: 1 },
+        ].map(frame => ({ ...frame, easing: 'ease-in-out' })), { duration, easing: 'linear' });
+        animation.id = 'signal-twinkle';
+        animations.add(animation);
+        animation.finished.then(() => {
+            animations.delete(animation);
+            scheduleTwinkle(marker, version, !paired && Math.random() < 0.12);
+        }).catch(() => { animations.delete(animation); });
+    }
+    function stop() {
+        generation++;
+        for (const timer of timers)
+            window.clearTimeout(timer);
+        timers.clear();
+        for (const animation of animations)
+            animation.cancel();
+        animations.clear();
+    }
+    function pauseDrift(paused) {
+        for (const marker of markers) {
+            const symbol = marker.querySelector('svg');
+            if (!symbol)
+                continue;
+            if (paused) {
+                if (!driftStates.has(symbol))
+                    driftStates.set(symbol, {
+                        value: symbol.style.getPropertyValue('animation-play-state'),
+                        priority: symbol.style.getPropertyPriority('animation-play-state'),
+                    });
+                symbol.style.setProperty('animation-play-state', 'paused');
+            }
+            else {
+                const previous = driftStates.get(symbol);
+                if (!previous)
+                    continue;
+                if (previous.value)
+                    symbol.style.setProperty('animation-play-state', previous.value, previous.priority);
+                else
+                    symbol.style.removeProperty('animation-play-state');
+                driftStates.delete(symbol);
+            }
+        }
+    }
+    function sync() {
+        stop();
+        const paused = media.matches || document.hidden;
+        pauseDrift(paused);
+        if (paused)
+            return;
+        for (const marker of markers) {
+            if (typeof marker.animate === 'function')
+                scheduleTwinkle(marker, generation);
+            const symbol = marker.querySelector('svg');
+            if (symbol && typeof symbol.animate === 'function')
+                breathe(symbol, generation, true);
+        }
+    }
+    media.addEventListener('change', sync);
+    document.addEventListener('visibilitychange', sync);
+    sync();
+    return () => {
+        stop();
+        pauseDrift(false);
+        media.removeEventListener('change', sync);
+        document.removeEventListener('visibilitychange', sync);
+    };
 }
-let cleanup=globalThis.setup();
-let cleanupSignals=animateSignals(document.querySelector('.signals'));
+
+/** Shared by the Home component and the dependency-free standalone preview. */
+function bindHomeInteraction(root, toggle, reset) {
+    let pointer = null;
+    const excluded = 'nav, a, button:not([data-particle-toggle]), input, select, textarea, summary, [role="button"]:not([data-particle-toggle]), [role="link"], [contenteditable], [data-no-toggle]';
+    const target = (event) => event.target instanceof Element ? event.target : null;
+    const down = (event) => {
+        if (!event.isPrimary || event.button !== 0) {
+            pointer = null;
+            return;
+        }
+        pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, dragged: false,
+            canceled: !!target(event)?.closest(excluded) };
+    };
+    const move = (event) => {
+        if (pointer?.id === event.pointerId && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 6)
+            pointer.dragged = true;
+    };
+    const cancel = () => { if (pointer)
+        pointer.canceled = true; };
+    const click = (event) => {
+        const element = target(event);
+        const home = element?.closest('a[data-home-reset]');
+        if (home) {
+            // Selecting the current Home resets its greeting without a morph or reload.
+            const url = new URL(home.href, window.location.href);
+            if (url.origin === window.location.origin && url.pathname === window.location.pathname)
+                event.preventDefault();
+            reset();
+            return;
+        }
+        if (!element || element.closest(excluded))
+            return;
+        // Keyboard-generated native button clicks have detail=0 and need no gesture.
+        if (event.detail !== 0 && (!pointer || pointer.dragged || pointer.canceled))
+            return;
+        if (event.detail !== 0 && window.getSelection()?.isCollapsed === false)
+            return;
+        toggle();
+    };
+    const restored = (event) => { if (event.persisted)
+        reset(); };
+    root.addEventListener('pointerdown', down, { capture: true, passive: true });
+    root.addEventListener('pointermove', move, { capture: true, passive: true });
+    root.addEventListener('pointerup', move, { capture: true, passive: true });
+    root.addEventListener('pointercancel', cancel, true);
+    root.addEventListener('click', click);
+    window.addEventListener('pageshow', restored);
+    return () => {
+        root.removeEventListener('pointerdown', down, true);
+        root.removeEventListener('pointermove', move, true);
+        root.removeEventListener('pointerup', move, true);
+        root.removeEventListener('pointercancel', cancel, true);
+        root.removeEventListener('click', click);
+        window.removeEventListener('pageshow', restored);
+    };
+}
+
+const cleanupParticles=setup();
+const cleanupSignals=animateSignals(document.querySelector('.signals'));
+let phrase='YAO YAO';
+function changeGreeting(next,animated){
+  phrase=next;desired.current=next;engine.current?.setPhrase(next,animated);
+  document.querySelector('[data-particle-toggle]').setAttribute('aria-pressed',String(next!=='YAO YAO'));
+  document.querySelector('[role="status"]').textContent=next;
+  document.getElementById('fallback').textContent=next;
+}
+const cleanupInteraction=bindHomeInteraction(document.getElementById('portal'),()=>changeGreeting(phrase==='YAO YAO'?'Nice to meet you.':'YAO YAO',true),()=>changeGreeting('YAO YAO',false));
 let selectedTheme='light';
 const system=matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(){const dark=selectedTheme==='dark'||(selectedTheme==='system'&&system.matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('light',!dark);document.querySelectorAll('[data-theme]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===selectedTheme)));}
 document.querySelectorAll('[data-theme]').forEach(button=>button.addEventListener('click',()=>{selectedTheme=button.dataset.theme;applyTheme();}));system.addEventListener('change',applyTheme);
-const portal=document.getElementById('portal');const review=document.getElementById('review-page');const entry=document.getElementById('entry');const replay=document.getElementById('replay');
-function enter(){cleanup?.();cleanup=null;cleanupSignals?.();cleanupSignals=null;portal.classList.add('hidden');document.getElementById('preview-label').classList.add('hidden');review.classList.remove('hidden');replay.focus();}
-entry.addEventListener('click',enter);replay.addEventListener('click',()=>{review.classList.add('hidden');portal.classList.remove('hidden');document.getElementById('preview-label').classList.remove('hidden');cleanup=globalThis.setup();cleanupSignals=animateSignals(document.querySelector('.signals'));entry.focus({preventScroll:true});});
-portal.addEventListener('keydown',event=>{if(event.key==='Escape')enter();if(event.key!=='Tab')return;const buttons=portal.querySelectorAll('button');const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
 applyTheme();
 </script></body></html>
