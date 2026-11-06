@@ -61,6 +61,7 @@ export function ThemeToggle() {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        data-academic="theme-control"
         type="button"
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => {

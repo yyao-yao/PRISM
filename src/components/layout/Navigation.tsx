@@ -98,6 +98,7 @@ export default function Navigation({
       {({ open }) => (
         <>
           <motion.div
+            data-academic="nav-surface"
             className={cn(
               'transition-all duration-300 ease-out',
               scrolled
@@ -105,11 +106,12 @@ export default function Navigation({
                 : 'bg-transparent'
             )}
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div data-academic="nav-frame" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center h-16 lg:h-20">
                 <motion.div
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
+                  data-academic="brand"
                   className="flex-shrink-0"
                 >
                   <Link
@@ -135,6 +137,7 @@ export default function Navigation({
                               ? 'bg-accent/[0.07]'
                               : 'bg-accent/10'
                           )}
+                          data-academic="nav-indicator"
                           initial={false}
                           animate={{
                             left: indicatorStyle.left,
@@ -158,6 +161,7 @@ export default function Navigation({
                             key={item.id}
                             href={href}
                             data-nav-href={href}
+                            aria-current={isActive ? 'page' : undefined}
                             prefetch={true}
                             onMouseEnter={() => setHoveredHref(href)}
                             className={cn(
@@ -202,7 +206,7 @@ export default function Navigation({
 
           <AnimatePresence>
             {open && (
-              <Disclosure.Panel static>
+              <Disclosure.Panel static data-academic="mobile-nav">
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
@@ -224,6 +228,7 @@ export default function Navigation({
                         >
                           <Disclosure.Button
                             as={Link}
+                            aria-current={isActive ? 'page' : undefined}
                             href={href}
                             prefetch={true}
                             className={cn(

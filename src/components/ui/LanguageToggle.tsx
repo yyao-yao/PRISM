@@ -40,6 +40,9 @@ export default function LanguageToggle({ i18n }: LanguageToggleProps) {
       <motion.button
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
+        data-academic="language-control"
+        aria-expanded={isOpen}
+        aria-label={currentLabel}
         type="button"
         onMouseDown={(e) => e.preventDefault()}
         onClick={() => setIsOpen(!isOpen)}
@@ -62,6 +65,7 @@ export default function LanguageToggle({ i18n }: LanguageToggleProps) {
           initial={{ opacity: 0, scale: 0.95, y: -10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: -10 }}
+          data-academic="language-menu"
           className={cn(
             'absolute right-0 mt-2 w-36 rounded-lg shadow-lg border',
             'bg-background border-neutral-200 dark:border-[rgba(148,163,184,0.24)]',
