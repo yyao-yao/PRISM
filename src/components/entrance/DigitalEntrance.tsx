@@ -3,14 +3,16 @@
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { PRIMARY_NAVIGATION } from '@/lib/navigation';
+import { getPrimaryNavigation } from '@/lib/navigation';
 import { bindHomeNavigation } from './homeInteraction';
+import { useLocaleStore } from '@/lib/stores/localeStore';
 import { useThemeStore } from '@/lib/stores/themeStore';
 import ParticleTitle from './ParticleTitle';
 import { animateSignals } from './animateSignals';
 import styles from './entrance.module.css';
 
 export default function DigitalEntrance() {
+  const locale = useLocaleStore(state => state.locale);
   const { theme, setTheme } = useThemeStore();
   const router = useRouter();
   const portal = useRef<HTMLElement>(null);
@@ -41,7 +43,7 @@ export default function DigitalEntrance() {
       <header className={styles.header}>
         <div className={styles.identity}><span className={styles.mark} aria-hidden="true">✳</span> YAO YAO <span className={styles.divider}>/</span> <span className={styles.muted}>PERSONAL INTERFACE</span></div>
         <nav className={styles.homeNav} aria-label="Primary navigation">
-          {PRIMARY_NAVIGATION.map(item => <Link key={item.id} href={item.href} aria-current={item.id === 'home' ? 'page' : undefined}>{item.title}</Link>)}
+          {getPrimaryNavigation(locale).map(item => <Link key={item.id} href={item.href} aria-current={item.id === 'home' ? 'page' : undefined}>{item.title}</Link>)}
         </nav>
         <div className={styles.themes} data-no-toggle role="group" aria-label="Color theme">
           {(['light', 'dark', 'system'] as const).map((value) => <button key={value} type="button" aria-pressed={theme === value} onClick={() => setTheme(value)}>{value}</button>)}

@@ -2,7 +2,17 @@
 
 Download `prism-stage1-preview.html` with GitHub's **Download raw file** and open it in a modern browser. The fixed-name particle scene and stars work offline without a server or dependencies.
 
-**The standalone file contains Home only.** Background/title clicks and academic links now go directly to the real `/about/`, `/publications/`, `/teaching/`, and `/cv/` routes. Those destinations require the full PRISM application; they are not bundled in a single downloaded HTML file. To test complete navigation, run `npm run dev`, or serve the static `out/` build. The preview can also be served beside the built site under `out/previews/`.
+**The standalone file contains Home only.** Background/title clicks and academic links now go directly to the real `/about/`, `/publications/`, `/teaching/`, `/cv/`, and `/photography/` routes. Those destinations require the full PRISM application; they are not bundled in a single downloaded HTML file. To test complete navigation, run `npm run dev`, or serve the static `out/` build. The preview can also be served beside the built site under `out/previews/`.
+
+## Current navigation
+
+The preview now includes Home, About, Research, Teaching, CV, and Photography.
+The full application uses the existing saved English/Chinese preference for both
+Home and shared academic navigation. The standalone file remains an English Home
+snapshot; academic/gallery pages and the lightbox require the full application.
+At narrow widths only the navigation gap is reduced to accommodate the sixth
+link. Particle/title geometry, star engines, theme controls, and scene styling
+remain unchanged.
 
 ## Final behavior
 
@@ -34,7 +44,7 @@ node previews/sync-home-preview.mjs
 npm run build
 ```
 
-The renderer and mouse physics match the approved pre-transformation fixed-name version byte for byte. The star helper, star markup, academic pages, content, route configuration, navigation model and dependency/deployment settings are unchanged. The generated preview uses the same renderer and guard logic as the React implementation.
+The renderer and mouse physics match the approved pre-transformation fixed-name version byte for byte. The star helper, star markup, academic pages, content, route configuration, Home click behavior and dependency/deployment settings are unchanged by the navigation integration. The generated preview uses the same renderer and guard logic as the React implementation.
 
 ## Verification
 

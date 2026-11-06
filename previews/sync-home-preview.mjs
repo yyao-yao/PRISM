@@ -11,7 +11,7 @@ new Function('exports', ts.transpileModule(read('src/lib/navigation.ts'), { comp
 const jsx = read('src/components/entrance/DigitalEntrance.tsx');
 let markup = jsx.slice(jsx.indexOf('<section ref={portal}'), jsx.lastIndexOf('</section>') + '</section>'.length);
 const links = navigation.PRIMARY_NAVIGATION.map(item => `<a href="${item.id === 'home' ? './prism-stage1-preview.html' : item.href}"${item.id === 'home' ? ' aria-current="page"' : ''}>${item.title}</a>`).join('');
-markup = markup.replace(/\{PRIMARY_NAVIGATION\.map\([\s\S]*?<\/Link>\)\}/, links);
+markup = markup.replace(/\{(?:PRIMARY_NAVIGATION|getPrimaryNavigation\(locale\))\.map\([\s\S]*?<\/Link>\)\}/, links);
 markup = markup.replace(/\{\(\['light', 'dark', 'system'\][\s\S]*?<\/button>\)\}/, ['light', 'dark', 'system'].map(theme => `<button type="button" data-theme="${theme}" aria-pressed="${theme === 'light'}">${theme}</button>`).join(''));
 markup = markup.replace(/<ParticleTitle[^>]*\/>/, '<canvas id="particles" class="canvas" aria-hidden="true"></canvas><span id="fallback" class="fallback" aria-hidden="true">YAO YAO</span>');
 markup = markup.replace(/className=\{`([^`]+)`\}/g, (_, value) => `class="${value.replace(/\$\{styles\.(\w+)\}/g, '$1')}"`)

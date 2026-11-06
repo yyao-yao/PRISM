@@ -150,7 +150,7 @@
   .homeNav { position: absolute; top: 91px; left: 40px; right: 40px; justify-content: center; gap: 24px; }
 }
 @media (max-width: 700px) {
-  .homeNav { top: 133px; left: 20px; right: 20px; gap: 20px; font-size: 9px; }
+  .homeNav { top: 133px; left: 20px; right: 20px; gap: clamp(8px, calc((100vw - 280px) / 4), 20px); font-size: 9px; }
 }
 @media (max-height: 650px) and (min-width: 701px) and (max-width: 1100px) {
   .homeNav { top: 61px; left: 40px; right: 40px; gap: 18px; font-size: 9px; }
@@ -176,7 +176,7 @@
       <header class="header">
         <div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span> <span class="muted">PERSONAL INTERFACE</span></div>
         <nav class="homeNav" aria-label="Primary navigation">
-          <a href="./prism-stage1-preview.html" aria-current="page">Home</a><a href="/about/">About</a><a href="/publications/">Research</a><a href="/teaching/">Teaching</a><a href="/cv/">CV</a>
+          <a href="./prism-stage1-preview.html" aria-current="page">Home</a><a href="/about/">About</a><a href="/publications/">Research</a><a href="/teaching/">Teaching</a><a href="/cv/">CV</a><a href="/photography/">Photography</a>
         </nav>
         <div class="themes" data-no-toggle role="group" aria-label="Color theme">
           <button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button>

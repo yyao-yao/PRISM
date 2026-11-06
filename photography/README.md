@@ -1,8 +1,10 @@
 # Photography — editorial gallery and lightbox
 
 The gallery is available directly at `/photography/`. Stage 2 adds an immersive
-lightbox while preserving the approved Stage 1 gallery. Navigation integration
-remains deferred. It reuses PRISM's approved academic canvas, theme provider, navigation and footer.
+lightbox while preserving the approved Stage 1 gallery. The six-link navigation
+now includes Photography on Home and all academic pages, with English/Chinese
+labels through the existing language preference. It reuses PRISM's approved
+academic canvas, theme provider, navigation and footer.
 Gallery CSS is isolated in `src/components/photography/photography.module.css`.
 
 ## Review locally
@@ -83,7 +85,8 @@ Actual browser screenshots and verification notes are in
 [previews/photography-stage1](../previews/photography-stage1/README.md).
 Stage 2 lightbox screenshots and checks are in
 [previews/photography-stage2](../previews/photography-stage2/README.md).
-Navigation integration awaits separate approval.
+Final navigation/export verification is recorded in
+[previews/photography-stage3](../previews/photography-stage3/README.md).
 
 ## Lightbox controls
 
