@@ -1,43 +1,29 @@
-# Interactive PRISM Home — local review
+# PRISM Home — fixed-name preview
 
-Download `prism-stage1-preview.html` using GitHub's **Download raw file**, then open it in a modern browser. The Home interaction requires no server, dependencies, external fonts, or network access.
+Download `prism-stage1-preview.html` with GitHub's **Download raw file** and open it in a modern browser. The fixed-name particle scene and stars work offline without a server or dependencies.
 
-The HTML is a standalone Home preview, not a copy of all academic pages. Its academic navigation links target the real PRISM routes and require the running/built application. Its Home link resets the greeting locally. To review all navigation, run the repository with `npm run dev`, or serve the static `out/` build.
+**The standalone file contains Home only.** Background/title clicks and academic links now go directly to the real `/about/`, `/publications/`, `/teaching/`, and `/cv/` routes. Those destinations require the full PRISM application; they are not bundled in a single downloaded HTML file. To test complete navigation, run `npm run dev`, or serve the static `out/` build. The preview can also be served beside the built site under `out/previews/`.
 
-## Routes
+## Final behavior
 
-| Navigation | Route |
-| --- | --- |
-| Home | `/` |
-| About | `/about/` |
-| Research | `/publications/` |
-| Teaching | `/teaching/` |
-| CV | `/cv/` |
+- `/` is permanent Home. Its only particle text is **YAO YAO**.
+- The existing mouse-responsive dispersion, watery disturbance edge and smooth restoration are preserved. The approved fixed-name renderer was restored intact; no additional text cache, particle transform, new force, or fade layer remains.
+- A valid background click navigates directly to `/about/` with no text transition, door animation, entry control, or waiting period.
+- The particle title is a normal About link. Tab to it and press **Enter** to navigate; native modified clicks and opening in a new tab also work.
+- Navigation links, theme controls and other interactive elements retain their own behavior and are excluded from background navigation.
+- Dragging more than six CSS pixels, text selection, canceled pointer/scroll gestures, and modified background clicks do not accidentally navigate.
+- Light/dark/system themes, typography, spacing, grid, star shapes and animations are unchanged. Reduced motion continues to disable particle movement and star motion while navigation remains available.
 
-The previous academic homepage's content-loading logic and renderer now live at `/about`. Publications, Teaching, CV, Awards (`/awards/`), Services (`/services/`), all content files, and localized example content are preserved. Navigation uses ordinary links. There is no entry gate, session-based eligibility, hidden academic homepage underneath Home, automatic About redirect, modal focus trap, or door animation.
+About remains at `/about/` with the original academic homepage and content-loading logic. Research uses `/publications/`. Teaching, CV, Awards (`/awards/`), Services (`/services/`), shared academic navigation and localized content are unchanged. No content, dependency, deployment, or other route files are modified by this simplification. There is no audio.
 
-## Home interaction
+## Source and checks
 
-- Click the background or particle title to alternate between **YAO YAO** and **Nice to meet you.** while staying on Home.
-- Each change takes about **1.3 seconds**: a small loosening, individually curved travel, and gradual gathering/settling. Repeated clicks retarget the current cloud without snapping.
-- Both phrases use the approved font and sampling density. A reusable pool handles different point counts with gradual fades. Surplus particles are invisible at rest, so the new phrase is not overpopulated.
-- The morph transports reference positions separately from the existing mouse offsets and velocity. The approved mouse-force equations and pointer tracking are unchanged and continue to work on both phrases.
-- Navigation, theme controls, and other interactive regions are excluded from background toggling. A gesture moving more than six CSS pixels, canceled touch gestures, or text selection cannot accidentally toggle the text.
-- The unchanged-looking title has a native keyboard button: Tab to it, then press **Enter** or **Space**. A keyboard focus ring and screen-reader help/status are provided.
-- Reduced motion changes phrases immediately. Returning to Home, selecting Home again, or restoring Home from browser page cache resets the greeting to **YAO YAO**.
-- The visible entry button is removed; a non-interactive spacer preserves the composition's vertical spacing.
-
-The approved grid, scene copy, star shapes/positions/colors, and complete `animateSignals.ts` helper are unchanged. The same independent breathing and stochastic twinkling run in both themes. There is no audio.
-
-## Source and reproducibility
-
-- `src/app/page.tsx`: the actual particle Home route.
-- `src/app/about/page.tsx`: original academic homepage loading/rendering logic.
-- `src/app/layout.tsx` and `EntranceBoundary.tsx`: route-aware academic chrome; Home is normal page content.
-- `src/lib/navigation.ts` and `Navigation.tsx`: the shared five destinations and academic navigation.
-- `DigitalEntrance.tsx` and `homeInteraction.ts`: Home composition, local greeting state, keyboard target, and guarded gesture binding.
-- `ParticleTitle.tsx`: cached masks and the separate reference-position morph.
-- `entrance.module.css`: additive navigation, title-button and spacer styles only; approved scene/star rules remain intact.
+- `ParticleTitle.tsx`: the approved fixed-name sampling and mouse physics only.
+- `DigitalEntrance.tsx`: static Home composition and a semantic title link; no text state.
+- `homeInteraction.ts`: guarded background navigation and drag rejection for the native title link.
+- `entrance.module.css`: existing scene styles plus a keyboard focus indicator for the title link.
+- `sync-home-preview.mjs`: derives the review HTML from the actual markup, renderer, star helper, gesture binding and CSS.
+- `check-home.mjs`: deterministic fixed-name physics/restoration and navigation-guard tests.
 
 Run from the repository root:
 
@@ -48,14 +34,14 @@ node previews/sync-home-preview.mjs
 npm run build
 ```
 
-The generator derives the standalone markup, CSS, particle engine, star helper, gesture handling and navigation from the actual sources. It introduces no runtime dependencies and is safe to rerun. The deterministic tests exercise the real extracted canvas effect: unequal counts and opacity fades, non-linear paths, 1.3-second completion, exact original point appearance after return, rapid retargeting, instant reset, reduced motion, visibility/resize recovery, and cleanup during a transition.
+The renderer and mouse physics match the approved pre-transformation fixed-name version byte for byte. The star helper, star markup, academic pages, content, route configuration, navigation model and dependency/deployment settings are unchanged. The generated preview uses the same renderer and guard logic as the React implementation.
 
 ## Verification
 
-The Next.js production build, its lint/type checks, deterministic morph tests, and source-preservation checks pass. The static build includes the new About route and every previous academic route. The mouse-force kernel, pointer tracking, star helper, content files, academic renderers and deployment configuration are unchanged.
+The production static build, lint/type checks, deterministic physics/input tests, preview syntax and source-preservation checks pass.
 
-Chromium checks passed against both the production static PRISM app and the standalone HTML: background/title toggles stay on Home; transformations completed in approximately 1.31 seconds; repeated toggles return the exact original point count and particle radii; native Enter/Space activation works; drag-out-and-back, text selection and canceled touch gestures are excluded correctly; rapid retargeting does not snap; Home resets immediately; theme controls and light/dark/system changes do not trigger text transformations; the original mouse dispersion works on both phrases; reduced motion switches instantly and preserves the existing static-star behavior. Mobile viewport, touch taps and orientation/resize recovery also passed without browser script errors.
+Chromium checks passed against both the built PRISM app and standalone preview: fixed-name rendering, mouse dispersion and restoration, direct background/title navigation to the original About page, keyboard Enter and browser Back, native Control-click opening About in a new tab, ordinary primary navigation, theme-control isolation, light/dark/system changes, reduced-motion accessibility, live star animations, other-control exclusion, nav whitespace, drag-out-and-back rejection, text selection and modified-background guards. All direct academic routes succeeded. Touch background/title activation, canceled scroll gestures and orientation/resize behavior also passed, with zero browser script errors.
 
-Actual application navigation was verified for About, Research, Teaching and CV, plus browser Back returning to default Home. Direct requests to About, Publications, Teaching, CV, Awards and Services all succeeded. Old session entry flags and `/#about` do not gate Home or automatically navigate to About.
+A desktop, mobile and short-window comparison against the previous preview confirmed unchanged canvas, surrounding text and all ten symbol positions. The shared star helper and approved fixed-name renderer are byte-for-byte preserved. The preview is reproducibly generated from those same sources.
 
-A desktop/mobile/short-window comparison against the approved preview verified unchanged canvas, description, hint and all ten symbol positions. Visual review also checked the reforming text and mobile navigation. Safari/Firefox, physical mobile devices and a real screen-reader session were not tested. No merge or deployment is part of this work.
+Safari/Firefox, physical mobile devices and a real screen-reader session were not tested. The standalone HTML does not bundle academic pages; About navigation requires the full application. No merge or deployment is included.

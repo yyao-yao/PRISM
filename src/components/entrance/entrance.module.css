@@ -140,7 +140,7 @@
 .homeNav a { color: var(--portal-muted); text-decoration: none; padding: 10px 0; }
 .homeNav a:hover, .homeNav a[aria-current='page'] { color: var(--portal-blue); }
 .homeNav a:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }
-.titleToggle { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; touch-action: pan-y; }
+.titleToggle { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-decoration: none; cursor: pointer; touch-action: pan-y; }
 .entrySpace { display: inline-flex; align-items: center; padding: 17px 21px; border: 1px solid transparent; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; font-size: 13px; visibility: hidden; pointer-events: none; }
 .entrySpace::before { content: '↗'; font-size: 18px; }
 @media (max-width: 1100px) {
@@ -152,3 +152,5 @@
 @media (max-height: 650px) and (min-width: 701px) and (max-width: 1100px) {
   .homeNav { top: 61px; left: 40px; right: 40px; gap: 18px; font-size: 9px; }
 }
+
+.titleToggle:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }

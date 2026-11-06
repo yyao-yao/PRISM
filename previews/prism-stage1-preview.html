@@ -143,7 +143,7 @@
 .homeNav a { color: var(--portal-muted); text-decoration: none; padding: 10px 0; }
 .homeNav a:hover, .homeNav a[aria-current='page'] { color: var(--portal-blue); }
 .homeNav a:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }
-.titleToggle { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; cursor: pointer; touch-action: pan-y; }
+.titleToggle { position: absolute; inset: 0; width: 100%; height: 100%; padding: 0; border: 0; background: transparent; color: inherit; text-decoration: none; cursor: pointer; touch-action: pan-y; }
 .entrySpace { display: inline-flex; align-items: center; padding: 17px 21px; border: 1px solid transparent; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; font-size: 13px; visibility: hidden; pointer-events: none; }
 .entrySpace::before { content: '↗'; font-size: 18px; }
 @media (max-width: 1100px) {
@@ -155,6 +155,8 @@
 @media (max-height: 650px) and (min-width: 701px) and (max-width: 1100px) {
   .homeNav { top: 61px; left: 40px; right: 40px; gap: 18px; font-size: 9px; }
 }
+
+.titleToggle:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }
 
 .preview-label{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:101;font:9px/1.5 monospace;text-align:center;color:var(--portal-muted,#68758b);white-space:nowrap;pointer-events:none}.dark .preview-label{color:#8996aa}.hidden{display:none!important}
 </style></head><body><main>
@@ -174,7 +176,7 @@
       <header class="header">
         <div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span> <span class="muted">PERSONAL INTERFACE</span></div>
         <nav class="homeNav" aria-label="Primary navigation">
-          <a href="./prism-stage1-preview.html" aria-current="page" data-home-reset>Home</a><a href="/about/">About</a><a href="/publications/">Research</a><a href="/teaching/">Teaching</a><a href="/cv/">CV</a>
+          <a href="./prism-stage1-preview.html" aria-current="page">Home</a><a href="/about/">About</a><a href="/publications/">Research</a><a href="/teaching/">Teaching</a><a href="/cv/">CV</a>
         </nav>
         <div class="themes" data-no-toggle role="group" aria-label="Color theme">
           <button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button>
@@ -185,12 +187,11 @@
       <div class="content">
         <p class="eyebrow"><span class="statusDot"></span> A SMALL POINT OF ENTRY</p>
         <h1 id="portal-title" class="srOnly">Yao Yao — Home</h1>
-        <div class="title"><button type="button" class="titleToggle" data-particle-toggle aria-label="Change particle greeting" aria-pressed="false" aria-describedby="greeting-help"><canvas id="particles" class="canvas" aria-hidden="true"></canvas><span id="fallback" class="fallback" aria-hidden="true">YAO YAO</span></button><span class="bracketLeft" aria-hidden="true">+</span><span class="bracketRight" aria-hidden="true">+</span></div>
+        <div class="title"><a href="/about/" class="titleToggle" data-particle-link aria-label="About Yao Yao" aria-describedby="home-help"><canvas id="particles" class="canvas" aria-hidden="true"></canvas><span id="fallback" class="fallback" aria-hidden="true">YAO YAO</span></a><span class="bracketLeft" aria-hidden="true">+</span><span class="bracketRight" aria-hidden="true">+</span></div>
         <div class="titleCaption" aria-hidden="true"><span>FORMED BY PARTICLES</span><span>CONNECTED BY CURIOSITY</span></div>
         <p class="description">Ideas take shape.<br /><span>A space for research, discovery, and what comes next.</span></p>
         <div class="entrySpace" aria-hidden="true"></div>
-        <p id="greeting-help" class="srOnly">Click the background or press Enter or Space on the particle title to change the greeting.</p>
-        <p class="srOnly" role="status" aria-live="polite">YAO YAO</p>
+        <p id="home-help" class="srOnly">Click the background or activate the particle title link to visit About.</p>
         <p class="hint">MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p>
       </div>
 
@@ -202,8 +203,6 @@
 </main><div class="preview-label">STANDALONE HOME PREVIEW<br>Local file · no deployment · no audio</div>
 <script>
 const canvas={current:document.getElementById('particles')};
-const desired={current:'YAO YAO'};
-const engine={current:null};
 const setReady=ready=>document.getElementById('fallback').classList.toggle('hidden',ready);
 function setup() {
     const element = canvas.current;
@@ -212,12 +211,6 @@ function setup() {
         return;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
     let particles = [];
-    let targets;
-    let activePhrase = desired.current;
-    let morph = null;
-    const duration = 1300;
-    const smooth = (t) => t * t * t * (t * (t * 6 - 15) + 10);
-    const clamp = (t) => Math.max(0, Math.min(1, t));
     let width = 0;
     let height = 0;
     let frame = 0;
@@ -231,10 +224,8 @@ function setup() {
     const draw = () => {
         context.clearRect(0, 0, width, height);
         for (const p of particles) {
-            if (p.alpha < 0.001)
-                continue;
             context.fillStyle = p.blue ? accent : ink;
-            context.globalAlpha = (p.blue ? 0.8 : 0.66 + p.size * 0.12) * p.alpha;
+            context.globalAlpha = p.blue ? 0.8 : 0.66 + p.size * 0.12;
             context.beginPath();
             context.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             context.fill();
@@ -246,59 +237,6 @@ function setup() {
         ink = css.getPropertyValue('--portal-ink').trim() || ink;
         accent = css.getPropertyValue('--portal-blue').trim() || accent;
         draw();
-    };
-    const sampleText = (label) => {
-        const mask = document.createElement('canvas');
-        mask.width = Math.ceil(width);
-        mask.height = Math.ceil(height);
-        const text = mask.getContext('2d');
-        if (!text)
-            return [];
-        text.font = `900 ${width * 0.205}px Arial, sans-serif`;
-        const measure = text.measureText(label);
-        const scale = width * 0.94 / measure.width;
-        text.font = `900 ${width * 0.205 * scale}px Arial, sans-serif`;
-        text.textAlign = 'center';
-        text.textBaseline = 'middle';
-        text.fillText(label, width / 2, height * 0.51);
-        const pixels = text.getImageData(0, 0, mask.width, mask.height).data;
-        // Adaptive sampling keeps thousands of dots without a DOM node per particle.
-        const spacing = Math.max(1.65, width / 310);
-        const points = [];
-        for (let y = spacing; y < height; y += spacing) {
-            for (let x = spacing; x < width; x += spacing) {
-                if (pixels[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] < 150)
-                    continue;
-                const jitter = () => (Math.random() - 0.5) * spacing * 0.32;
-                const homeX = x + jitter();
-                const homeY = y + jitter();
-                points.push({ x: homeX, y: homeY, size: spacing * (0.22 + Math.random() * 0.12), blue: Math.random() < 0.075 });
-            }
-        }
-        // Sorting complete seeds changes no visible dot: positions, radii and blue
-        // assignments stay paired exactly as in the approved sampling algorithm.
-        return points.sort((a, b) => a.x - b.x || a.y - b.y);
-    };
-    const assignTargets = (points, count) => {
-        const result = Array.from({ length: count }, (_, i) => ({
-            seed: points[Math.min(points.length - 1, Math.floor(i * points.length / count))], alpha: 0,
-        }));
-        // Distribute active slots across the whole pool so count changes never
-        // remove one half of a letter field or stack surplus dots in the new text.
-        points.forEach((seed, i) => { result[Math.floor(i * count / points.length)] = { seed, alpha: 1 }; });
-        return result;
-    };
-    const settle = () => {
-        morph = null;
-        particles.forEach((p, i) => {
-            const target = targets[activePhrase][i];
-            p.x = p.homeX = target.seed.x;
-            p.y = p.homeY = target.seed.y;
-            p.vx = p.vy = 0;
-            p.alpha = target.alpha;
-            p.path = undefined;
-        });
-        element.dataset.morphState = 'settled';
     };
     const resize = () => {
         const rect = element.getBoundingClientRect();
@@ -312,88 +250,40 @@ function setup() {
         element.width = Math.round(width * ratio);
         element.height = Math.round(height * ratio);
         context.setTransform(ratio, 0, 0, ratio, 0, 0);
-        activePhrase = desired.current;
-        const name = sampleText('YAO YAO');
-        const greeting = sampleText('Nice to meet you.');
-        const count = Math.max(name.length, greeting.length);
-        if (!count || !name.length || !greeting.length)
+        const mask = document.createElement('canvas');
+        mask.width = Math.ceil(width);
+        mask.height = Math.ceil(height);
+        const text = mask.getContext('2d');
+        if (!text)
             return;
-        targets = { 'YAO YAO': assignTargets(name, count), 'Nice to meet you.': assignTargets(greeting, count) };
-        particles = targets[activePhrase].map((target, i) => {
-            const seed = targets['YAO YAO'][i].alpha ? targets['YAO YAO'][i].seed : targets['Nice to meet you.'][i].seed;
-            return { x: target.seed.x, y: target.seed.y, homeX: target.seed.x, homeY: target.seed.y,
-                vx: 0, vy: 0, alpha: target.alpha, size: seed.size, blue: seed.blue };
-        });
-        settle();
-        element.dataset.phrase = activePhrase;
+        text.font = `900 ${width * 0.205}px Arial, sans-serif`;
+        const measure = text.measureText('YAO YAO');
+        const scale = width * 0.94 / measure.width;
+        text.font = `900 ${width * 0.205 * scale}px Arial, sans-serif`;
+        text.textAlign = 'center';
+        text.textBaseline = 'middle';
+        text.fillText('YAO YAO', width / 2, height * 0.51);
+        const pixels = text.getImageData(0, 0, mask.width, mask.height).data;
+        // Adaptive sampling keeps thousands of dots without a DOM node per particle.
+        const spacing = Math.max(1.65, width / 310);
+        particles = [];
+        for (let y = spacing; y < height; y += spacing) {
+            for (let x = spacing; x < width; x += spacing) {
+                if (pixels[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] < 150)
+                    continue;
+                const jitter = () => (Math.random() - 0.5) * spacing * 0.32;
+                const homeX = x + jitter();
+                const homeY = y + jitter();
+                particles.push({ x: homeX, y: homeY, homeX, homeY, vx: 0, vy: 0, size: spacing * (0.22 + Math.random() * 0.12), blue: Math.random() < 0.075 });
+            }
+        }
         colors();
         setReady(true);
         start();
     };
-    const setPhrase = (next, animated) => {
-        desired.current = next;
-        if (!targets)
-            return;
-        if (next === activePhrase && animated)
-            return;
-        activePhrase = next;
-        element.dataset.phrase = next;
-        if (!animated || reducedMotion.matches || document.hidden) {
-            settle();
-            draw();
-            return;
-        }
-        particles.forEach((p, i) => {
-            const target = targets[next][i];
-            const dx = target.seed.x - p.homeX;
-            const dy = target.seed.y - p.homeY;
-            const length = Math.hypot(dx, dy) || 1;
-            const angle = i * 2.3999632297;
-            p.path = { fromX: p.homeX, fromY: p.homeY, toX: target.seed.x, toY: target.seed.y,
-                fromAlpha: p.alpha, toAlpha: target.alpha, nx: -dy / length, ny: dx / length,
-                bend: (i % 2 ? 1 : -1) * Math.min(28, 8 + length * 0.07), loosenX: Math.cos(angle) * 9, loosenY: Math.sin(angle) * 7,
-                delay: (i % 17) / 17 * 0.055 };
-        });
-        morph = { started: performance.now() };
-        element.dataset.morphState = 'flowing';
-        if (!frame) {
-            lastTime = performance.now();
-            frame = requestAnimationFrame(animate);
-        }
-    };
-    const updateMorph = (time) => {
-        if (!morph)
-            return;
-        const progress = clamp((time - morph.started) / duration);
-        for (const p of particles) {
-            const path = p.path;
-            if (!path)
-                continue;
-            const t = clamp((progress - path.delay) / (1 - path.delay));
-            const travel = smooth(clamp((t - 0.12) / 0.76));
-            const arc = Math.sin(Math.PI * travel);
-            const loosen = Math.sin(Math.PI * clamp(t / 0.35)) * (1 - travel);
-            const x = progress === 1 ? path.toX : path.fromX + (path.toX - path.fromX) * travel + path.nx * path.bend * arc + path.loosenX * loosen;
-            const y = progress === 1 ? path.toY : path.fromY + (path.toY - path.fromY) * travel + path.ny * path.bend * arc + path.loosenY * loosen;
-            // Transport the reference point only. Mouse displacement and velocity
-            // remain intact, and the approved mouse-force integration below is unchanged.
-            p.x += x - p.homeX;
-            p.y += y - p.homeY;
-            p.homeX = x;
-            p.homeY = y;
-            p.alpha = progress === 1 ? path.toAlpha : path.fromAlpha + (path.toAlpha - path.fromAlpha) * smooth(t);
-            if (progress === 1)
-                p.path = undefined;
-        }
-        if (progress === 1) {
-            morph = null;
-            element.dataset.morphState = 'settled';
-        }
-    };
     const animate = (time) => {
         const dt = Math.max(0, Math.min((time - (lastTime || time)) / 16.667, 2));
         lastTime = time;
-        updateMorph(time);
         // Keep the original independent scatter and spring, with only a small
         // directional stretch and shear at the edge of the pointer disturbance.
         const baseRadius = Math.min(115, Math.max(55, width * 0.12));
@@ -423,10 +313,8 @@ function setup() {
         const steps = Math.max(1, Math.ceil(dt * 2));
         const step = dt / steps;
         const damping = Math.pow(0.88, step);
-        let unsettled = sources.length > 0 || morph !== null;
+        let unsettled = sources.length > 0;
         for (const p of particles) {
-            if (p.alpha === 0 && !morph)
-                continue;
             let forceX = 0;
             let forceY = 0;
             let weightSum = 0;
@@ -498,8 +386,6 @@ function setup() {
         pointer = null;
         wakes = [];
         if (reducedMotion.matches || document.hidden) {
-            if (morph)
-                settle();
             particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
             draw();
         }
@@ -556,10 +442,8 @@ function setup() {
     window.addEventListener('blur', leave);
     document.addEventListener('visibilitychange', start);
     reducedMotion.addEventListener('change', start);
-    engine.current = { setPhrase };
     resize();
     return () => {
-        engine.current = null;
         cancelAnimationFrame(frame);
         observer.disconnect();
         themeObserver.disconnect();
@@ -699,18 +583,19 @@ function animateSignals(container) {
     };
 }
 
-/** Shared by the Home component and the dependency-free standalone preview. */
-function bindHomeInteraction(root, toggle, reset) {
+/** Guard Home's background navigation without intercepting its normal controls. */
+function bindHomeNavigation(root, navigate) {
     let pointer = null;
-    const excluded = 'nav, a, button:not([data-particle-toggle]), input, select, textarea, summary, [role="button"]:not([data-particle-toggle]), [role="link"], [contenteditable], [data-no-toggle]';
+    const excluded = 'nav, a, button, input, select, textarea, label, summary, details, [role="button"], [role="link"], [role="checkbox"], [role="switch"], [role="slider"], [role="tab"], [contenteditable]:not([contenteditable="false"]), [tabindex]:not([tabindex="-1"]), [data-no-toggle]';
     const target = (event) => event.target instanceof Element ? event.target : null;
     const down = (event) => {
         if (!event.isPrimary || event.button !== 0) {
             pointer = null;
             return;
         }
+        const element = target(event);
         pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, dragged: false,
-            canceled: !!target(event)?.closest(excluded) };
+            canceled: !!element?.closest(excluded) && !element.closest('[data-particle-link]') };
     };
     const move = (event) => {
         if (pointer?.id === event.pointerId && Math.hypot(event.clientX - pointer.x, event.clientY - pointer.y) > 6)
@@ -719,53 +604,42 @@ function bindHomeInteraction(root, toggle, reset) {
     const cancel = () => { if (pointer)
         pointer.canceled = true; };
     const click = (event) => {
+        if (event.defaultPrevented)
+            return;
         const element = target(event);
-        const home = element?.closest('a[data-home-reset]');
-        if (home) {
-            // Selecting the current Home resets its greeting without a morph or reload.
-            const url = new URL(home.href, window.location.href);
-            if (url.origin === window.location.origin && url.pathname === window.location.pathname)
+        if (!element)
+            return;
+        const invalidGesture = event.detail !== 0 && (!pointer || pointer.dragged || pointer.canceled || window.getSelection()?.isCollapsed === false);
+        if (element.closest('[data-particle-link]')) {
+            // This is a real link: Enter, modified clicks and open-in-new-tab retain
+            // native behavior. Only a drag/canceled gesture suppresses navigation.
+            if (invalidGesture)
                 event.preventDefault();
-            reset();
             return;
         }
-        if (!element || element.closest(excluded))
+        if (element.closest(excluded) || invalidGesture)
             return;
-        // Keyboard-generated native button clicks have detail=0 and need no gesture.
-        if (event.detail !== 0 && (!pointer || pointer.dragged || pointer.canceled))
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
             return;
-        if (event.detail !== 0 && window.getSelection()?.isCollapsed === false)
-            return;
-        toggle();
+        navigate();
     };
-    const restored = (event) => { if (event.persisted)
-        reset(); };
     root.addEventListener('pointerdown', down, { capture: true, passive: true });
     root.addEventListener('pointermove', move, { capture: true, passive: true });
     root.addEventListener('pointerup', move, { capture: true, passive: true });
     root.addEventListener('pointercancel', cancel, true);
     root.addEventListener('click', click);
-    window.addEventListener('pageshow', restored);
     return () => {
         root.removeEventListener('pointerdown', down, true);
         root.removeEventListener('pointermove', move, true);
         root.removeEventListener('pointerup', move, true);
         root.removeEventListener('pointercancel', cancel, true);
         root.removeEventListener('click', click);
-        window.removeEventListener('pageshow', restored);
     };
 }
 
 const cleanupParticles=setup();
 const cleanupSignals=animateSignals(document.querySelector('.signals'));
-let phrase='YAO YAO';
-function changeGreeting(next,animated){
-  phrase=next;desired.current=next;engine.current?.setPhrase(next,animated);
-  document.querySelector('[data-particle-toggle]').setAttribute('aria-pressed',String(next!=='YAO YAO'));
-  document.querySelector('[role="status"]').textContent=next;
-  document.getElementById('fallback').textContent=next;
-}
-const cleanupInteraction=bindHomeInteraction(document.getElementById('portal'),()=>changeGreeting(phrase==='YAO YAO'?'Nice to meet you.':'YAO YAO',true),()=>changeGreeting('YAO YAO',false));
+const cleanupNavigation=bindHomeNavigation(document.getElementById('portal'),()=>window.location.assign('/about/'));
 let selectedTheme='light';
 const system=matchMedia('(prefers-color-scheme: dark)');
 function applyTheme(){const dark=selectedTheme==='dark'||(selectedTheme==='system'&&system.matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('light',!dark);document.querySelectorAll('[data-theme]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===selectedTheme)));}
