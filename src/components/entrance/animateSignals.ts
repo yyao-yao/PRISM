@@ -1,22 +1,27 @@
-/** Preserve the existing light/glow envelope; add a quiet breath in both themes. */
+/** Independent breathing and separately scheduled, stochastic twinkle events. */
 export function animateSignals(container: HTMLElement): () => void {
   const markers = Array.from(container.querySelectorAll<HTMLElement>('[data-signal]'));
   const media = window.matchMedia('(prefers-reduced-motion: reduce)');
   const animations = new Set<Animation>();
+  const timers = new Set<number>();
+  const driftStates = new Map<SVGSVGElement, { value: string; priority: string }>();
   let generation = 0;
 
   function breathe(symbol: SVGSVGElement, version: number, first: boolean) {
     if (version !== generation) return;
-    const duration = 4600 + Math.random() * 2600;
-    // This nested animation never brightens the existing envelope. Individual
-    // scale/translate compose with the original CSS drift rather than replace it.
+    const duration = 2500 + Math.random() * 2000;
+    // SVG scale/translate compose with CSS drift; its opacity can only dim the
+    // outer star. Neither layer changes the resting opacity or transform.
     const animation = symbol.animate([
-      { opacity: 0.98, scale: '1', translate: '0px 0px', offset: 0 },
-      { opacity: 1, scale: '1.016', translate: '0.35px -0.55px', offset: 0.22 + Math.random() * 0.08 },
-      { opacity: 0.96, scale: '0.99', translate: '-0.25px 0.35px', offset: 0.55 + Math.random() * 0.08 },
-      { opacity: 0.99, scale: '1.006', translate: '0.1px -0.2px', offset: 0.82 + Math.random() * 0.07 },
-      { opacity: 0.98, scale: '1', translate: '0px 0px', offset: 1 },
-    ], { duration, delay: first ? -Math.random() * duration * 0.7 : 0, easing: 'ease-in-out' });
+      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0 },
+      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.12 },
+      { opacity: 1, scale: String(1.06 + Math.random() * 0.04), translate: '0.45px -0.65px', offset: 0.35 + Math.random() * 0.08 },
+      { opacity: 0.9 + Math.random() * 0.04, scale: String(0.93 + Math.random() * 0.03), translate: '-0.35px 0.45px', offset: 0.64 + Math.random() * 0.08 },
+      { opacity: 1, scale: '1', translate: '0px 0px', offset: 0.9 },
+      { opacity: 1, scale: '1', translate: '0px 0px', offset: 1 },
+    ].map(frame => ({ ...frame, easing: 'ease-in-out' })),
+    { duration, delay: first ? -Math.random() * duration * 0.35 : 0, easing: 'linear' });
+    animation.id = 'signal-breath';
     animations.add(animation);
     animation.finished.then(() => {
       animations.delete(animation);
@@ -24,34 +29,80 @@ export function animateSignals(container: HTMLElement): () => void {
     }).catch(() => { animations.delete(animation); });
   }
 
-  function cycle(marker: HTMLElement, version: number, first: boolean) {
+  function scheduleTwinkle(marker: HTMLElement, version: number, paired = false) {
     if (version !== generation) return;
-    // Only two star shapes can glint, so bright accents stay rare and sparse.
-    const glint = marker.hasAttribute('data-glint') && (first || Math.random() < 0.28);
-    const duration = 11000 + Math.random() * 12000;
-    const glow = glint ? 'drop-shadow(0 0 3px currentColor)' : 'drop-shadow(0 0 0px currentColor)';
+    // The optional second event is smaller and separated by a calm pause. It
+    // cannot chain into a burst: paired events always return to the normal wait.
+    const wait = paired ? 1500 + Math.random() * 500 : 1500 + Math.random() * 3500;
+    const timer = window.setTimeout(() => {
+      timers.delete(timer);
+      if (version === generation) twinkle(marker, version, paired);
+    }, wait);
+    timers.add(timer);
+  }
+
+  function twinkle(marker: HTMLElement, version: number, paired: boolean) {
+    if (version !== generation) return;
+    const fadeIn = 200 + Math.random() * 300;
+    const hold = 100 + Math.random() * 200;
+    const fadeOut = 500 + Math.random() * 500;
+    const duration = fadeIn + hold + fadeOut;
+    const glint = !paired && marker.hasAttribute('data-glint') && Math.random() < 0.35;
+    const peak = paired ? 0.5 + Math.random() * 0.13 : glint ? 0.9 + Math.random() * 0.05 : 0.64 + Math.random() * 0.14;
+    const blur = paired ? 0.5 + Math.random() : glint ? 3.5 + Math.random() * 1.5 : 0.7 + Math.random() * 1.1;
+    const clear = 'drop-shadow(0 0 0px currentColor)';
+    const glow = `drop-shadow(0 0 ${blur}px currentColor)`;
+    // Opacity/glow stay on the wrapper; breathing stays on the SVG. Restoring
+    // opacity 0.3 and clearing the glow avoids a permanently brighter light theme.
     const animation = marker.animate([
-      { opacity: 0.3, filter: 'drop-shadow(0 0 0px currentColor)', offset: 0 },
-      { opacity: 0.23 + Math.random() * 0.08, offset: 0.15 + Math.random() * 0.1 },
-      { opacity: 0.39 + Math.random() * 0.08, offset: 0.36 + Math.random() * 0.08 },
-      { opacity: glint ? 0.8 + Math.random() * 0.08 : 0.5 + Math.random() * 0.12, filter: glow, offset: 0.58 + Math.random() * 0.08 },
-      { opacity: 0.32 + Math.random() * 0.05, offset: 0.81 + Math.random() * 0.08 },
-      { opacity: 0.3, filter: 'drop-shadow(0 0 0px currentColor)', offset: 1 },
-    ], { duration, delay: first ? -Math.random() * duration * 0.6 : 0, easing: 'ease-in-out' });
+      { opacity: 0.3, filter: clear, offset: 0 },
+      { opacity: peak, filter: glow, offset: fadeIn / duration },
+      { opacity: peak, filter: glow, offset: (fadeIn + hold) / duration },
+      { opacity: 0.3, filter: clear, offset: 1 },
+    ].map(frame => ({ ...frame, easing: 'ease-in-out' })), { duration, easing: 'linear' });
+    animation.id = 'signal-twinkle';
     animations.add(animation);
     animation.finished.then(() => {
       animations.delete(animation);
-      cycle(marker, version, false);
+      scheduleTwinkle(marker, version, !paired && Math.random() < 0.12);
     }).catch(() => { animations.delete(animation); });
   }
 
-  function sync() {
+  function stop() {
     generation++;
+    for (const timer of timers) window.clearTimeout(timer);
+    timers.clear();
     for (const animation of animations) animation.cancel();
     animations.clear();
-    if (media.matches || document.hidden) return;
+  }
+
+  function pauseDrift(paused: boolean) {
     for (const marker of markers) {
-      if (typeof marker.animate === 'function') cycle(marker, generation, true);
+      const symbol = marker.querySelector('svg');
+      if (!symbol) continue;
+      if (paused) {
+        if (!driftStates.has(symbol)) driftStates.set(symbol, {
+          value: symbol.style.getPropertyValue('animation-play-state'),
+          priority: symbol.style.getPropertyPriority('animation-play-state'),
+        });
+        symbol.style.setProperty('animation-play-state', 'paused');
+      } else {
+        const previous = driftStates.get(symbol);
+        if (!previous) continue;
+        if (previous.value) symbol.style.setProperty('animation-play-state', previous.value, previous.priority);
+        else symbol.style.removeProperty('animation-play-state');
+        driftStates.delete(symbol);
+      }
+    }
+  }
+
+  function sync() {
+    stop();
+    const paused = media.matches || document.hidden;
+    pauseDrift(paused);
+    if (paused) return;
+    for (const marker of markers) {
+      if (typeof marker.animate === 'function') scheduleTwinkle(marker, generation);
       const symbol = marker.querySelector('svg');
       if (symbol && typeof symbol.animate === 'function') breathe(symbol, generation, true);
     }
@@ -61,9 +112,8 @@ export function animateSignals(container: HTMLElement): () => void {
   document.addEventListener('visibilitychange', sync);
   sync();
   return () => {
-    generation++;
-    for (const animation of animations) animation.cancel();
-    animations.clear();
+    stop();
+    pauseDrift(false);
     media.removeEventListener('change', sync);
     document.removeEventListener('visibilitychange', sync);
   };
