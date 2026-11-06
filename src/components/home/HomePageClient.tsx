@@ -1,7 +1,5 @@
 'use client';
 
-import LineRabbit from '@/components/rabbit/LineRabbit';
-import rabbitStyles from '@/components/rabbit/lineRabbit.module.css';
 import Profile from '@/components/home/Profile';
 import About from '@/components/home/About';
 import SelectedPublications from '@/components/home/SelectedPublications';
@@ -56,7 +54,7 @@ export default function HomePageClient({ dataByLocale, defaultLocale }: HomePage
   }
 
   return (
-    <div data-academic="page" className={`max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background min-h-screen ${rabbitStyles.page}`}>
+    <div data-academic="page" className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-background min-h-screen">
       <div data-academic="columns" className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-1">
           <Profile
@@ -125,7 +123,6 @@ export default function HomePageClient({ dataByLocale, defaultLocale }: HomePage
           ))}
         </div>
       </div>
-      <LineRabbit />
     </div>
   );
 }
