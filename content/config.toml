@@ -1,13 +1,13 @@
 [site]
-title = "Jiale Liu"
-description = "PhD student at the University of Example."
+title = "Yao Yao"
+description = "PhD student at the University of Georgia."
 favicon = "/favicon.svg"
 last_updated = "November 18, 2025"
 
 [author]
-name = "Jiale Liu"
+name = "Yao Yao"
 title = "PhD Student"
-institution = "University of Example"
+institution = "University of Georgia"
 avatar = "/bio.jpg"
 
 [social]
