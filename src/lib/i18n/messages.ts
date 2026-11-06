@@ -28,7 +28,6 @@ export interface LocaleMessages {
   };
   home: {
     about: string;
-    news: string;
     selectedPublications: string;
     viewAll: string;
   };
@@ -78,7 +77,6 @@ const en: LocaleMessages = {
   },
   home: {
     about: 'About',
-    news: 'News',
     selectedPublications: 'Selected Publications',
     viewAll: 'View All',
   },
@@ -128,7 +126,6 @@ const zh: LocaleMessages = {
   },
   home: {
     about: '关于我',
-    news: '动态',
     selectedPublications: '精选论文',
     viewAll: '查看全部',
   },

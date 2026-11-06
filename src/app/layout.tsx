@@ -1,3 +1,4 @@
+import { hasOfficialCv } from '@/lib/cv';
 import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
@@ -168,6 +169,7 @@ export default function RootLayout({
             <EntranceBoundary
               navigation={
                 <Navigation
+                  cvAvailable={hasOfficialCv()}
                   siteTitle={config.site.title}
                   i18n={runtimeI18n}
                   siteTitleByLocale={siteTitleByLocale}

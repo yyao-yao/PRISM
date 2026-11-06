@@ -98,9 +98,11 @@ enable_likes = true # 是否开启点赞功能
 
 PRISM 支持以下几种页面类型：
 
-*   `text`: 纯文本渲染（Markdown），非常适合用来放 **个人简历 (CV)** 或 **详细介绍 (Bio)**。
+*   `text`: 纯文本渲染（Markdown），非常适合用来放 **详细介绍 (Bio)**。
 *   `card`: 卡片列表布局，适合展示 **项目 (Projects)** 或 **获奖经历 (Awards)**。卡片条目的 `content` 字段支持 Markdown。
 *   `publication`: 完整的论文列表页，自带搜索和筛选器。
+
+简历导航直接打开 `public/cv.pdf` 中的正式 PDF；请参阅[上传说明](docs/cv.md)。不再维护 Markdown 简历。
 
 ### 5. 多语言支持（`content_<locale>/`）
 
@@ -108,7 +110,7 @@ PRISM 现已支持多语言：
 
 *   默认语言内容放在 `content/`
 *   其他语言内容放在 `content_<locale>/`（例如：`content_zh/`、`content_en/`）。
-*   各语言目录保持同名文件。例如：`content/cv.md`（默认）、`content_zh/cv.md`
+*   各语言目录保持同名文件。例如：`content/bio.md`（默认）、`content_zh/bio.md`
 *   若某个语言文件缺失，PRISM 会自动回退到默认 `content/` 中的同名文件。
 
 在 `content/config.toml` 中配置多语言行为：

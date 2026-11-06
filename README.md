@@ -85,11 +85,13 @@ Export your publications from Google Scholar, Zotero, or Mendeley to `content/pu
 
 Publication titles support a subset of BibTeX inline formatting commands, including `\textit{}`, `\emph{}`, `\textbf{}`, `\textsc{}`, `\textsuperscript{}` and `\textsubscript{}`.
 
+The CV navigation opens the official PDF at `public/cv.pdf`; see [CV upload instructions](docs/cv.md). No Markdown CV is maintained.
+
 ### 4. Adding New Pages
 To add a new page (e.g., "Projects"), create a TOML file in `content/` (e.g., `content/projects.toml`) and add it to the `navigation` list in `content/config.toml`.
 
 Supported page types:
-*   `text`: Renders Markdown content (Great for CVs, Bio).
+*   `text`: Renders Markdown content (Great for biographies).
 *   `card`: Renders a list of cards (Great for Projects, Awards). Content of each card item supports Markdown.
 *   `publication`: Renders the full publications list with filters.
 
@@ -99,8 +101,8 @@ PRISM now supports i18n, i.e., multi-language.
 *   Default language lives in `content/`.
 *   Additional languages live in `content_<locale>/` (for example: `content_zh/`, `content_en/`).
 *   Keep the same filenames across directories. Example:
-    *   `content/cv.md` (default)
-    *   `content_zh/cv.md`
+    *   `content/bio.md` (default)
+    *   `content_zh/bio.md`
 *   If a localized file is missing, PRISM automatically falls back to the default `content/` version.
 
 Configure language behavior in `content/config.toml`:

@@ -47,6 +47,6 @@ href = "/services"
 
 [[navigation]]
 title = "简历"
-type = "page"
+type = "link"
 target = "cv"
-href = "/cv"
+href = "/cv.pdf"

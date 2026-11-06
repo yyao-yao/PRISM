@@ -1,5 +1,5 @@
 import { getConfig } from '@/lib/config';
-import { getMarkdownContent, getBibtexContent, getTomlContent, getPageConfig } from '@/lib/content';
+import { getMarkdownContent, getBibtexContent, getPageConfig } from '@/lib/content';
 import { parseBibTeX } from '@/lib/bibtexParser';
 import HomePageClient, { type HomePageLocaleData } from '@/components/home/HomePageClient';
 import { Publication } from '@/types/publication';
@@ -8,19 +8,13 @@ import { getRuntimeI18nConfig } from '@/lib/i18n/config';
 
 interface SectionConfig {
   id: string;
-  type: 'markdown' | 'publications' | 'list';
+  type: 'markdown' | 'publications';
   title?: string;
   source?: string;
   filter?: string;
   limit?: number;
   content?: string;
   publications?: Publication[];
-  items?: NewsItem[];
-}
-
-interface NewsItem {
-  date: string;
-  content: string;
 }
 
 type PageData =
@@ -46,13 +40,6 @@ function processSections(sections: SectionConfig[], locale?: string): SectionCon
         return {
           ...section,
           publications: filteredPubs.slice(0, section.limit || 5),
-        };
-      }
-      case 'list': {
-        const newsData = section.source ? getTomlContent<{ news: NewsItem[] }>(section.source, locale) : null;
-        return {
-          ...section,
-          items: newsData?.news || [],
         };
       }
       default:

@@ -1,5 +1,6 @@
+import { hasOfficialCv } from '@/lib/cv';
 import DigitalEntrance from '@/components/entrance/DigitalEntrance';
 
 export default function Home() {
-  return <DigitalEntrance />;
+  return <DigitalEntrance cvAvailable={hasOfficialCv()} />;
 }

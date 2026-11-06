@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import Link from 'next/link';
+import NavigationLink from '@/components/ui/NavigationLink';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Disclosure } from '@headlessui/react';
@@ -15,6 +16,7 @@ import { useMessages } from '@/lib/i18n/useMessages';
 import type { I18nRuntimeConfig } from '@/types/i18n';
 
 interface NavigationProps {
+  cvAvailable: boolean;
   siteTitle: string;
   i18n: I18nRuntimeConfig;
   siteTitleByLocale?: Record<string, string>;
@@ -22,6 +24,7 @@ interface NavigationProps {
 
 export default function Navigation({
   siteTitle,
+  cvAvailable,
   i18n,
   siteTitleByLocale,
 }: NavigationProps) {
@@ -157,7 +160,8 @@ export default function Navigation({
                         const href = getDesktopItemHref(item);
 
                         return (
-                          <Link
+                          <NavigationLink
+                            cvAvailable={cvAvailable}
                             key={item.id}
                             href={href}
                             data-nav-href={href}
@@ -174,7 +178,7 @@ export default function Navigation({
                             )}
                           >
                             {item.title}
-                          </Link>
+                          </NavigationLink>
                         );
                       })}
                     </div>
@@ -227,7 +231,8 @@ export default function Navigation({
                           transition={{ delay: index * 0.1 }}
                         >
                           <Disclosure.Button
-                            as={Link}
+                            as={NavigationLink}
+                            cvAvailable={cvAvailable}
                             aria-current={isActive ? 'page' : undefined}
                             href={href}
                             prefetch={true}
