@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Navigation from '@/components/layout/Navigation';
 import Footer from '@/components/layout/Footer';
+import EntranceBoundary from '@/components/entrance/EntranceBoundary';
 import { ThemeProvider } from '@/components/ui/ThemeProvider';
 import { LocaleProvider } from '@/components/ui/LocaleProvider';
 import { getConfig } from '@/lib/config';
@@ -170,6 +171,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <LocaleProvider config={runtimeI18n}>
+            <EntranceBoundary>
             <Navigation
               items={config.navigation}
               siteTitle={config.site.title}
@@ -178,7 +180,7 @@ export default function RootLayout({
               itemsByLocale={navigationByLocale}
               siteTitleByLocale={siteTitleByLocale}
             />
-            <main className="min-h-screen pt-16 lg:pt-20">
+            <main tabIndex={-1} className="min-h-screen pt-16 lg:pt-20">
               {children}
             </main>
             <Footer
@@ -186,6 +188,7 @@ export default function RootLayout({
               lastUpdatedByLocale={lastUpdatedByLocale}
               defaultLocale={runtimeI18n.defaultLocale}
             />
+            </EntranceBoundary>
           </LocaleProvider>
         </ThemeProvider>
       </body>

@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en" class="light"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light dark"><title>Yao Yao — Standalone Portal Preview</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f5f6f8}button{font:inherit}p,h1{margin-top:0}
+.portal {
+  --portal-bg: #f5f6f8;
+  --portal-ink: #243148;
+  --portal-muted: #6a778b;
+  --portal-blue: #3678e8;
+  --portal-line: rgba(65, 89, 123, .08);
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  min-height: 100svh;
+  overflow: auto;
+  isolation: isolate;
+  color: var(--portal-ink);
+  background-color: var(--portal-bg);
+  background-image: linear-gradient(var(--portal-line) 1px, transparent 1px), linear-gradient(90deg, var(--portal-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.dark .portal {
+  --portal-bg: #0b1019;
+  --portal-ink: #dce5f2;
+  --portal-muted: #8996aa;
+  --portal-blue: #6c9ffc;
+  --portal-line: rgba(145, 169, 205, .065);
+}
+.portal::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background: radial-gradient(ellipse at 50% 43%, var(--portal-bg) 8%, transparent 74%);
+}
+.header, .footer, .coordinates, .eyebrow, .titleCaption, .entry, .hint, .floating, .themes {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+}
+.header { display: flex; align-items: center; justify-content: space-between; padding: 30px 40px; gap: 20px; }
+.identity { display: flex; align-items: center; gap: 12px; font-size: 10px; letter-spacing: .09em; }
+.mark { color: var(--portal-blue); font-size: 28px; line-height: 1; }
+.divider { color: var(--portal-muted); margin: 0 8px; }
+.muted { color: var(--portal-muted); }
+.themes { display: flex; gap: 3px; border: 1px solid var(--portal-line); border-radius: 4px; padding: 3px; }
+.themes button { border: 0; background: transparent; color: var(--portal-muted); padding: 7px 10px; font-size: 10px; cursor: pointer; border-radius: 2px; }
+.themes button[aria-pressed='true'] { color: var(--portal-blue); background: color-mix(in srgb, var(--portal-blue) 10%, transparent); }
+.portal button:focus-visible { outline: 2px solid var(--portal-blue); outline-offset: 5px; }
+.coordinates { position: absolute; left: 40px; right: 40px; top: 142px; display: flex; justify-content: space-between; color: var(--portal-muted); font-size: 9px; letter-spacing: .12em; }
+.content { width: min(1100px, 90%); margin: max(65px, calc((100svh - 650px) / 2)) auto 135px; text-align: center; }
+.eyebrow { color: var(--portal-muted); font-size: 10px; letter-spacing: .2em; display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; }
+.statusDot { display: inline-block; width: 5px; height: 5px; background: var(--portal-blue); border-radius: 50%; box-shadow: 0 0 8px color-mix(in srgb, var(--portal-blue) 25%, transparent); }
+.title { position: relative; width: 100%; height: auto; aspect-ratio: 4.9; }
+.canvas { width: 100%; height: 100%; display: block; }
+.fallback { position: absolute; inset: 0; display: grid; place-items: center; font-size: clamp(46px, 14vw, 175px); font-weight: 900; letter-spacing: -.06em; }
+.bracketLeft, .bracketRight { position: absolute; top: 50%; font: 15px monospace; color: var(--portal-blue); }
+.bracketLeft { left: -1%; }.bracketRight { right: -1%; }
+.titleCaption { display: flex; justify-content: space-between; padding: 12px 3%; color: var(--portal-muted); font-size: 8px; letter-spacing: .15em; }
+.description { font-size: 20px; font-weight: 400; line-height: 1.9; margin: 36px 0 28px; letter-spacing: -.025em; }
+.description span { font-size: 13px; color: var(--portal-muted); letter-spacing: 0; }
+.entry { display: inline-flex; align-items: center; gap: 24px; padding: 17px 21px; color: var(--portal-ink); background: var(--portal-bg); border: 1px solid color-mix(in srgb, var(--portal-ink) 25%, transparent); border-radius: 3px; font-size: 13px; cursor: pointer; transition: border-color .4s, background .4s; }
+.entry:hover { border-color: var(--portal-blue); background: color-mix(in srgb, var(--portal-blue) 5%, var(--portal-bg)); }
+.entryArrow { color: var(--portal-blue); font-size: 18px; }.entryEnd { color: var(--portal-muted); }
+.hint { margin-top: 18px; color: var(--portal-muted); font-size: 8px; letter-spacing: .12em; }
+.floating { position: absolute; display: flex; align-items: center; gap: 10px; font-size: 8px; letter-spacing: .1em; color: var(--portal-muted); pointer-events: none; animation: float 12s ease-in-out infinite alternate; }
+.floatOne { top: 27%; left: 8%; }.floatTwo { bottom: 23%; right: 6%; animation-delay: -6s; }
+.floating i { display: block; width: 12px; height: 12px; border: 1px solid var(--portal-blue); transform: rotate(45deg); }
+.cross { font-size: 20px; color: var(--portal-blue); font-weight: 300; }
+.orbit { position: absolute; left: 8%; bottom: 19%; width: 35px; height: 35px; border: 1px solid color-mix(in srgb, var(--portal-blue) 30%, transparent); border-radius: 50%; pointer-events: none; }
+.orbit span { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--portal-blue); left: 4px; top: 1px; }
+.footer { position: absolute; bottom: 0; left: 40px; right: 40px; border-top: 1px solid var(--portal-line); padding: 24px 0; display: flex; justify-content: space-between; align-items: center; gap: 15px; font-size: 9px; letter-spacing: .08em; color: var(--portal-muted); }
+.footer > span:first-child { display: flex; align-items: center; gap: 8px; }.blue { color: var(--portal-blue); }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+@keyframes float { from { transform: translateY(-5px); } to { transform: translateY(6px); } }
+@media (min-width: 1500px) { .content { width: min(1350px, 86%); } }
+@media (max-width: 700px) {
+  .portal { background-size: 40px 40px; }
+  .header { padding: 22px 20px; flex-wrap: wrap; }
+  .identity { font-size: 9px; gap: 8px; }.identity .muted, .divider { display: none; }
+  .themes button { padding: 9px 10px; }
+  .coordinates { top: 112px; left: 22px; right: 22px; font-size: 7px; }
+  .content { width: 92%; margin-top: max(115px, calc((100svh - 475px) / 2)); margin-bottom: 140px; }
+  .eyebrow { font-size: 8px; letter-spacing: .15em; margin-bottom: 30px; }
+  .titleCaption { font-size: 6px; letter-spacing: .07em; padding-top: 14px; }
+  .description { margin: 35px 12px 27px; font-size: 18px; }
+  .description span { display: block; font-size: 12px; line-height: 1.7; max-width: 270px; margin: 4px auto 0; }
+  .description br { display: none; }
+  .hint { font-size: 6px; }
+  .floating { font-size: 6px; }.floatOne { top: 23%; left: 7%; }.floatTwo { bottom: 115px; right: 7%; }
+  .orbit { bottom: 110px; left: 9%; width: 23px; height: 23px; }
+  .footer { left: 22px; right: 22px; font-size: 8px; padding: 22px 0; }.footerMiddle { display: none; }
+}
+@media (max-height: 650px) and (min-width: 701px) {
+  .content { width: min(780px, 80%); margin-top: 30px; margin-bottom: 100px; }
+  .coordinates { top: 95px; }.eyebrow { margin-bottom: 15px; }.description { margin: 15px 0; }
+  .floating, .orbit { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .floating { animation: none; }.entry { transition: none; } }
+
+.preview-label{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);z-index:101;font:9px/1.5 monospace;text-align:center;color:var(--portal-muted,#68758b);white-space:nowrap;pointer-events:none}.dark .preview-label{color:#8996aa}
+.review-page{min-height:100svh;display:grid;place-items:center;padding:32px;font:16px/1.7 Arial,sans-serif;color:#243148;background:#f5f6f8}.dark .review-page{background:#0b1019;color:#dce5f2}.review-card{max-width:560px}.review-card button{padding:14px 20px;cursor:pointer}.review-card small{font-family:monospace;color:#3678e8}.hidden{display:none!important}
+</style></head><body>
+<div class="review-page hidden" id="review-page"><div class="review-card"><small>STANDALONE DESIGN PREVIEW / STAGE 1</small><h1>Entry interaction complete.</h1><p>In the PRISM implementation, this button reveals the original academic homepage immediately. This standalone file contains only the portal design and particle interactions.</p><p>The two-panel door animation is reserved for Stage 2. Audio is not included.</p><button id="replay" type="button">↶ Replay portal</button></div></div>
+<section class="portal" id="portal" role="dialog" aria-modal="true" aria-labelledby="portal-title">
+<header class="header"><div class="identity"><span class="mark" aria-hidden="true">✳</span> YAO YAO <span class="divider">/</span><span class="muted">PERSONAL INTERFACE</span></div><div class="themes" role="group" aria-label="Color theme"><button type="button" data-theme="light" aria-pressed="true">light</button><button type="button" data-theme="dark" aria-pressed="false">dark</button><button type="button" data-theme="system" aria-pressed="false">system</button></div></header>
+<div class="coordinates" aria-hidden="true"><span>INDEX — 001</span><span>EST. / ACADEMIC SPACE</span></div>
+<div class="content"><p class="eyebrow"><span class="statusDot"></span>A SMALL POINT OF ENTRY</p><h1 id="portal-title" class="srOnly">Yao Yao — academic website entrance</h1>
+<div class="title"><canvas id="particles" class="canvas" aria-hidden="true"></canvas><span class="fallback" id="fallback" aria-hidden="true">YAO YAO</span><span class="bracketLeft" aria-hidden="true">+</span><span class="bracketRight" aria-hidden="true">+</span></div>
+<div class="titleCaption" aria-hidden="true"><span>FORMED BY PARTICLES</span><span>CONNECTED BY CURIOSITY</span></div>
+<p class="description">Ideas take shape.<br><span>A space for research, discovery, and what comes next.</span></p>
+<button id="entry" class="entry" type="button"><span class="entryArrow" aria-hidden="true">↗</span> initiate_entry()<span class="entryEnd" aria-hidden="true">↵</span></button>
+<p class="hint">MOVE CLOSER. WATCH THE POSSIBILITIES UNFOLD.</p></div>
+<div class="floating floatOne" aria-hidden="true"><i></i> FIELD / ACTIVE</div><div class="floating floatTwo" aria-hidden="true"><span class="cross">+</span> RESTORING EQUILIBRIUM</div><div class="orbit" aria-hidden="true"><span></span></div>
+<footer class="footer"><span><span class="statusDot"></span> SYSTEM READY</span><span class="footerMiddle">RESEARCH · THOUGHT · EXPLORATION</span><span>PRISM <span class="blue">/</span> 01</span></footer>
+</section><div class="preview-label" id="preview-label">STANDALONE VISUAL PREVIEW · STAGE 1<br>Local file · no deployment · no audio</div>
+<script>
+const canvas={current:document.getElementById('particles')};
+const setReady=ready=>document.getElementById('fallback').classList.toggle('hidden',ready);
+                                                                                                                              
+
+
+function setup(){
+    const element = canvas.current;
+    const context = element?.getContext('2d');
+    if (!element || !context) return;
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let particles             = [];
+    let width = 0;
+    let height = 0;
+    let frame = 0;
+    let lastTime = 0;
+    let pointer                                  = null;
+    let ink = '#243148';
+    let accent = '#3678e8';
+
+    const draw = () => {
+      context.clearRect(0, 0, width, height);
+      for (const p of particles) {
+        context.fillStyle = p.blue ? accent : ink;
+        context.globalAlpha = p.blue ? 0.8 : 0.66 + p.size * 0.12;
+        context.beginPath();
+        context.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.globalAlpha = 1;
+    };
+
+    const colors = () => {
+      const css = getComputedStyle(element);
+      ink = css.getPropertyValue('--portal-ink').trim() || ink;
+      accent = css.getPropertyValue('--portal-blue').trim() || accent;
+      draw();
+    };
+
+    const resize = () => {
+      const rect = element.getBoundingClientRect();
+      width = rect.width;
+      height = rect.height;
+      if (!width || !height) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2);
+      element.width = Math.round(width * ratio);
+      element.height = Math.round(height * ratio);
+      context.setTransform(ratio, 0, 0, ratio, 0, 0);
+      const mask = document.createElement('canvas');
+      mask.width = Math.ceil(width);
+      mask.height = Math.ceil(height);
+      const text = mask.getContext('2d');
+      if (!text) return;
+      text.font = `900 ${width * 0.205}px Arial, sans-serif`;
+      const measure = text.measureText('YAO YAO');
+      const scale = width * 0.94 / measure.width;
+      text.font = `900 ${width * 0.205 * scale}px Arial, sans-serif`;
+      text.textAlign = 'center';
+      text.textBaseline = 'middle';
+      text.fillText('YAO YAO', width / 2, height * 0.51);
+      const pixels = text.getImageData(0, 0, mask.width, mask.height).data;
+      // Adaptive sampling keeps thousands of dots without a DOM node per particle.
+      const spacing = Math.max(1.65, width / 310);
+      particles = [];
+      for (let y = spacing; y < height; y += spacing) {
+        for (let x = spacing; x < width; x += spacing) {
+          if (pixels[(Math.floor(y) * mask.width + Math.floor(x)) * 4 + 3] < 150) continue;
+          const jitter = () => (Math.random() - 0.5) * spacing * 0.32;
+          const homeX = x + jitter();
+          const homeY = y + jitter();
+          particles.push({ x: homeX, y: homeY, homeX, homeY, vx: 0, vy: 0, size: spacing * (0.22 + Math.random() * 0.12), blue: Math.random() < 0.075 });
+        }
+      }
+      colors();
+      setReady(true);
+    };
+
+    const animate = (time        ) => {
+      const dt = Math.min((time - (lastTime || time)) / 16.667, 2);
+      lastTime = time;
+      const radius = Math.min(115, Math.max(55, width * 0.12));
+      for (const p of particles) {
+        if (pointer) {
+          const dx = p.x - pointer.x;
+          const dy = p.y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < radius) {
+            const force = Math.pow(1 - distance / radius, 2) * 0.85;
+            p.vx += dx / Math.max(distance, 1) * force * dt;
+            p.vy += dy / Math.max(distance, 1) * force * dt;
+          }
+        }
+        p.vx = (p.vx + (p.homeX - p.x) * 0.013 * dt) * Math.pow(0.88, dt);
+        p.vy = (p.vy + (p.homeY - p.y) * 0.013 * dt) * Math.pow(0.88, dt);
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+      }
+      draw();
+      frame = requestAnimationFrame(animate);
+    };
+    const start = () => {
+      cancelAnimationFrame(frame);
+      lastTime = 0;
+      if (reducedMotion.matches || document.hidden) {
+        particles.forEach(p => { p.x = p.homeX; p.y = p.homeY; p.vx = p.vy = 0; });
+        draw();
+      } else frame = requestAnimationFrame(animate);
+    };
+    const move = (event              ) => {
+      if (event.pointerType === 'touch' || reducedMotion.matches) return;
+      const rect = element.getBoundingClientRect();
+      pointer = { x: event.clientX - rect.left, y: event.clientY - rect.top };
+    };
+    const leave = () => { pointer = null; };
+    const observer = new ResizeObserver(resize);
+    const themeObserver = new MutationObserver(colors);
+    observer.observe(element);
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class', 'data-theme'] });
+    window.addEventListener('pointermove', move, { passive: true });
+    document.documentElement.addEventListener('pointerleave', leave);
+    window.addEventListener('blur', leave);
+    document.addEventListener('visibilitychange', start);
+    reducedMotion.addEventListener('change', start);
+    resize();
+    start();
+      return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      themeObserver.disconnect();
+      window.removeEventListener('pointermove', move);
+      document.documentElement.removeEventListener('pointerleave', leave);
+      window.removeEventListener('blur', leave);
+      document.removeEventListener('visibilitychange', start);
+      reducedMotion.removeEventListener('change', start);
+    };
+
+}
+globalThis.setup = setup;
+let cleanup=globalThis.setup();
+let selectedTheme='light';
+const system=matchMedia('(prefers-color-scheme: dark)');
+function applyTheme(){const dark=selectedTheme==='dark'||(selectedTheme==='system'&&system.matches);document.documentElement.classList.toggle('dark',dark);document.documentElement.classList.toggle('light',!dark);document.querySelectorAll('[data-theme]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.theme===selectedTheme)));}
+document.querySelectorAll('[data-theme]').forEach(button=>button.addEventListener('click',()=>{selectedTheme=button.dataset.theme;applyTheme();}));system.addEventListener('change',applyTheme);
+const portal=document.getElementById('portal');const review=document.getElementById('review-page');const entry=document.getElementById('entry');const replay=document.getElementById('replay');
+function enter(){cleanup?.();cleanup=null;portal.classList.add('hidden');document.getElementById('preview-label').classList.add('hidden');review.classList.remove('hidden');replay.focus();}
+entry.addEventListener('click',enter);replay.addEventListener('click',()=>{review.classList.add('hidden');portal.classList.remove('hidden');document.getElementById('preview-label').classList.remove('hidden');cleanup=globalThis.setup();entry.focus({preventScroll:true});});
+portal.addEventListener('keydown',event=>{if(event.key==='Escape')enter();if(event.key!=='Tab')return;const buttons=portal.querySelectorAll('button');const first=buttons[0],last=buttons[buttons.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}});
+applyTheme();
+</script></body></html>
