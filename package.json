@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "photos:prepare": "node scripts/prepare-photography.mjs",
+    "predev": "npm run photos:prepare",
+    "prebuild": "npm run photos:prepare"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -32,6 +35,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.3",
     "lightningcss": "^1",
+    "sharp": "0.34.2",
     "svg2ico": "^1.0.35",
     "tailwindcss": "^4",
     "typescript": "^5"

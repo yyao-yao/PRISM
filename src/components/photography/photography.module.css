@@ -1,0 +1,52 @@
+.page { max-width: 1184px; margin: 0 auto; padding: 64px 32px 112px; }
+.heading { margin-bottom: 64px; max-width: 760px; }
+.heading h1 { margin: 0 0 20px; font-size: 36px; line-height: 1.2; }
+.heading h1::before { content: ''; display: inline-block; width: 6px; height: 6px; margin: 0 16px 8px 0; background: var(--blue); }
+.subtitle { color: var(--secondary); font-size: 16px; line-height: 1.8; margin: 0; }
+.sampleNotice { margin: 20px 0 0; max-width: 640px; font-size: 12px; line-height: 1.8; color: var(--secondary); }
+.gallery { display: flex; flex-direction: column; gap: 112px; }
+.opening, .pair, .solo { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 32px; align-items: start; }
+.photograph { min-width: 0; margin: 0; }
+.picture { display: block; }
+.picture img { display: block; width: 100%; height: auto; }
+.opening .photograph { grid-column: 1 / span 10; }
+.opening .photograph[data-orientation='portrait'] { grid-column: 3 / span 5; }
+.pair .photograph:first-child { grid-column: 1 / span 5; }
+.pair .photograph:first-child[data-orientation='portrait'] { grid-column: 2 / span 4; }
+.pair .photograph:last-child { grid-column: 7 / span 6; margin-top: 128px; }
+.pair .photograph:last-child[data-orientation='portrait'] { grid-column: 9 / span 4; margin-top: 80px; }
+.pair[data-rhythm='1'] .photograph:first-child { grid-column: 1 / span 4; }
+.pair[data-rhythm='1'] .photograph:last-child { grid-column: 6 / span 7; margin-top: 96px; }
+.pair[data-rhythm='1'] .photograph:last-child[data-orientation='portrait'] { grid-column: 9 / span 4; }
+.pair[data-rhythm='2'] .photograph:first-child { grid-column: 1 / span 4; }
+.pair[data-rhythm='2'] .photograph:last-child { margin-top: 160px; }
+.solo .photograph { grid-column: 7 / span 5; }
+.solo .photograph[data-orientation='landscape'] { grid-column: 3 / span 10; }
+.caption { padding-top: 16px; }
+.photoTitle { color: var(--ink); font-size: 15px; font-weight: 500; line-height: 1.5; margin: 0; }
+.photoDescription { color: var(--secondary); font-size: 14px; line-height: 1.75; margin: 8px 0 0; }
+.metadata { color: var(--secondary); font-family: var(--font-metadata); font-size: 11px; line-height: 1.8; margin: 8px 0 0; }
+.credit { color: var(--secondary); font-size: 11px; line-height: 1.8; margin: 5px 0 0; }
+.credit a { color: inherit; text-decoration: none; text-underline-offset: 3px; }
+.credit a:hover { color: var(--link); text-decoration: underline; }
+@media (max-width: 1023px) {
+  .page { padding: 40px 24px 80px; }
+  .heading { margin-bottom: 48px; }
+  .gallery { gap: 80px; }
+  .opening, .pair, .solo { grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 24px; }
+  .opening .photograph { grid-column: 1 / -1; }
+  .opening .photograph[data-orientation='portrait'] { grid-column: 2 / span 5; }
+  .pair .photograph:first-child, .pair .photograph:first-child[data-orientation], .pair[data-rhythm] .photograph:first-child { grid-column: 1 / span 3; }
+  .pair .photograph:last-child, .pair .photograph:last-child[data-orientation], .pair[data-rhythm] .photograph:last-child, .pair[data-rhythm] .photograph:last-child[data-orientation] { grid-column: 5 / span 4; margin-top: 72px; }
+  .solo .photograph { grid-column: 4 / span 4; }
+  .solo .photograph[data-orientation='landscape'] { grid-column: 2 / span 7; }
+}
+@media (max-width: 640px) {
+  .page { padding-bottom: 64px; }
+  .heading h1 { font-size: 30px; }
+  .sampleNotice { margin-top: 16px; }
+  .gallery { gap: 64px; }
+  .opening, .pair, .solo { display: flex; flex-direction: column; gap: 64px; }
+  .gallery .photograph { width: 100%; margin-top: 0 !important; }
+  .caption { padding-top: 14px; }
+}

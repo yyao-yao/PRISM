@@ -12,7 +12,7 @@ export default function EntranceBoundary({ children, navigation, footer }: {
   const pathname = usePathname();
   if (pathname === '/') return <main key={pathname}>{children}</main>;
   // Keep the editorial scope explicit; Home and other routes retain their chrome.
-  const isAcademic = ['/about', '/publications', '/teaching', '/cv'].includes(pathname.replace(/\/$/, ''));
+  const isAcademic = ['/about', '/publications', '/teaching', '/cv', '/photography'].includes(pathname.replace(/\/$/, ''));
   const chrome = <>
     {navigation}
     <main key={pathname} tabIndex={-1} className="min-h-screen pt-16 lg:pt-20">{children}</main>

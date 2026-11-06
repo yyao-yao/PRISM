@@ -1,0 +1,82 @@
+title = "Photography"
+description = "Fragments of places, people, and passing moments."
+
+[[photos]]
+id = "example-01"
+src = "example-01.jpg"
+alt = "Evergreen forest beside a turquoise lake with distant mountains."
+title = "Water & woodland"
+credit = "Paul Jarvis"
+source_url = "https://unsplash.com/photos/6J--NXulQCs"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-02"
+src = "example-02.jpg"
+alt = "An empty cobbled street between tall brick buildings."
+title = "An empty street"
+credit = "Nicholas Swanson"
+source_url = "https://unsplash.com/photos/SyBYM8R6VU4"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-03"
+src = "example-03.jpg"
+alt = "White clouds above a jagged mountain ridge beneath a blue sky."
+title = "Clouds above the ridge"
+credit = "Nicholas Swanson"
+source_url = "https://unsplash.com/photos/d19by2PLaPc"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-04"
+src = "example-04.jpg"
+alt = "Golden cactus spines in close-up against a softly blurred background."
+title = "Afternoon light"
+credit = "Shane Colella"
+source_url = "https://unsplash.com/photos/znM0ujn2RUA"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-05"
+src = "example-05.jpg"
+alt = "Snow-covered mountain slopes surrounding a dark wooded valley."
+title = "Snow country"
+credit = "Go Wild"
+source_url = "https://unsplash.com/photos/V0yAek6BgGk"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-06"
+src = "example-06.jpg"
+alt = "A weathered stone facade with a wooden doorway and shuttered windows."
+title = "A doorway"
+credit = "Paul Evans"
+source_url = "https://unsplash.com/photos/CtkDsu4w-Rs"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-07"
+src = "example-07.jpg"
+alt = "Driftwood and rounded rocks beside calm blue coastal water."
+title = "At the shoreline"
+credit = "Paul Jarvis"
+source_url = "https://unsplash.com/photos/gkT4FfgHO5o"
+license = "Unsplash License"
+sample = true
+
+[[photos]]
+id = "example-08"
+src = "example-08.jpg"
+alt = "A black-and-white hillside of conifer trees beneath a cloudy sky."
+title = "Forest in monochrome"
+credit = "Rula Sibai"
+source_url = "https://unsplash.com/photos/QbkGwv3xtmQ"
+license = "Unsplash License"
+sample = true

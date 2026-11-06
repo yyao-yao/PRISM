@@ -42,3 +42,6 @@ next-env.d.ts
 
 # wrangler
 .wrangler
+# Reproducible build-time Photography assets
+/public/photography/
+/public/.photography-preparing/
