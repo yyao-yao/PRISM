@@ -8,12 +8,14 @@ interface TextPageProps {
     config: TextPageConfig;
     content: string;
     embedded?: boolean;
+    editorial?: boolean;
 }
 
-export default function TextPage({ config, content, embedded = false }: TextPageProps) {
+export default function TextPage({ config, content, embedded = false, editorial = false }: TextPageProps) {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            data-academic="cv"
+            initial={editorial ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className={embedded ? "" : "max-w-3xl mx-auto"}
@@ -24,7 +26,7 @@ export default function TextPage({ config, content, embedded = false }: TextPage
                     {config.description}
                 </p>
             )}
-            <div className="text-neutral-700 dark:text-neutral-600 leading-relaxed">
+            <div data-academic="cv-body" className="text-neutral-700 dark:text-neutral-600 leading-relaxed">
                 <ReactMarkdown
                     components={{
                         h1: ({ children }) => <h1 className="text-3xl font-serif font-bold text-primary mt-8 mb-4">{children}</h1>,

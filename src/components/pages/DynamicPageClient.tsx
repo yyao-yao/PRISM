@@ -9,6 +9,7 @@ import {
   TextPageConfig,
   CardPageConfig,
 } from '@/types/page';
+import { usePathname } from 'next/navigation';
 import { useLocaleStore } from '@/lib/stores/localeStore';
 
 export type DynamicPageLocaleData =
@@ -22,6 +23,8 @@ interface DynamicPageClientProps {
 }
 
 export default function DynamicPageClient({ dataByLocale, defaultLocale }: DynamicPageClientProps) {
+  const pathname = usePathname();
+  const editorial = ['/publications', '/teaching', '/cv'].includes(pathname.replace(/\/$/, ''));
   const locale = useLocaleStore((state) => state.locale);
   const fallback = dataByLocale[defaultLocale] || Object.values(dataByLocale)[0];
   const pageData = dataByLocale[locale] || fallback;
@@ -31,15 +34,15 @@ export default function DynamicPageClient({ dataByLocale, defaultLocale }: Dynam
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div data-academic={editorial ? 'document-page' : undefined} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {pageData.type === 'publication' && (
-        <PublicationsList config={pageData.config} publications={pageData.publications} />
+        <PublicationsList config={pageData.config} publications={pageData.publications} editorial={editorial} />
       )}
       {pageData.type === 'text' && (
-        <TextPage config={pageData.config} content={pageData.content} />
+        <TextPage config={pageData.config} content={pageData.content} editorial={editorial} />
       )}
       {pageData.type === 'card' && (
-        <CardPage config={pageData.config} />
+        <CardPage config={pageData.config} editorial={editorial} />
       )}
     </div>
   );

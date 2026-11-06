@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useMemo, useId } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import {
     MagnifyingGlassIcon,
@@ -21,10 +21,14 @@ interface PublicationsListProps {
     config: PublicationPageConfig;
     publications: Publication[];
     embedded?: boolean;
+    editorial?: boolean;
 }
 
-export default function PublicationsList({ config, publications, embedded = false }: PublicationsListProps) {
+export default function PublicationsList({ config, publications, embedded = false, editorial = false }: PublicationsListProps) {
     const messages = useMessages();
+    const controlsId = useId();
+    const reducedMotion = useReducedMotion();
+    const panelTransition = editorial ? { duration: reducedMotion ? 0 : 0.22 } : undefined;
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedYear, setSelectedYear] = useState<number | 'all'>('all');
     const [selectedType, setSelectedType] = useState<string | 'all'>('all');
@@ -61,11 +65,12 @@ export default function PublicationsList({ config, publications, embedded = fals
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            data-academic="research"
+            initial={editorial ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
         >
-            <div className="mb-8">
+            <div data-academic="page-heading" className="mb-8">
                 <h1 className={`${embedded ? "text-2xl" : "text-4xl"} font-serif font-bold text-primary mb-4`}>{config.title}</h1>
                 {config.description && (
                     <p className={`${embedded ? "text-base" : "text-lg"} text-neutral-600 dark:text-neutral-500 max-w-2xl`}>
@@ -75,12 +80,13 @@ export default function PublicationsList({ config, publications, embedded = fals
             </div>
 
             {/* Search and Filter Controls */}
-            <div className="mb-8 space-y-4">
+            <div data-academic="research-controls" className="mb-8 space-y-4">
                 {/* ... (keep existing controls) ... */}
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-grow">
                         <MagnifyingGlassIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-neutral-400" />
                         <input
+                            aria-label={messages.publications.searchPlaceholder}
                             type="text"
                             placeholder={messages.publications.searchPlaceholder}
                             value={searchQuery}
@@ -89,6 +95,9 @@ export default function PublicationsList({ config, publications, embedded = fals
                         />
                     </div>
                     <button
+                        data-academic="filter-toggle"
+                        aria-expanded={showFilters}
+                        aria-controls={`${controlsId}-filters`}
                         onClick={() => setShowFilters(!showFilters)}
                         className={cn(
                             "flex items-center justify-center px-4 py-2 rounded-lg border transition-all duration-200",
@@ -105,19 +114,22 @@ export default function PublicationsList({ config, publications, embedded = fals
                 <AnimatePresence>
                     {showFilters && (
                         <motion.div
-                            initial={{ opacity: 0, height: 0 }}
+                            id={`${controlsId}-filters`}
+                            initial={editorial && reducedMotion ? false : { opacity: 0, height: 0 }}
+                            transition={panelTransition}
                             animate={{ opacity: 1, height: 'auto' }}
                             exit={{ opacity: 0, height: 0 }}
                             className="overflow-hidden"
                         >
-                            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg border border-neutral-200 dark:border-neutral-800 flex flex-wrap gap-6">
+                            <div data-academic="filters" className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-lg border border-neutral-200 dark:border-neutral-800 flex flex-wrap gap-6">
                                 {/* Year Filter */}
-                                <div className="space-y-2">
+                                <div role="group" aria-label={messages.publications.year} data-academic="filter-year" className="space-y-2">
                                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 flex items-center">
                                         <CalendarIcon className="h-4 w-4 mr-1" /> {messages.publications.year}
                                     </label>
                                     <div className="flex flex-wrap gap-2">
                                         <button
+                                            aria-pressed={selectedYear === 'all'}
                                             onClick={() => setSelectedYear('all')}
                                             className={cn(
                                                 "px-3 py-1 text-xs rounded-full transition-colors",
@@ -131,6 +143,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         {years.map(year => (
                                             <button
                                                 key={year}
+                                                aria-pressed={selectedYear === year}
                                                 onClick={() => setSelectedYear(year)}
                                                 className={cn(
                                                     "px-3 py-1 text-xs rounded-full transition-colors",
@@ -146,12 +159,13 @@ export default function PublicationsList({ config, publications, embedded = fals
                                 </div>
 
                                 {/* Type Filter */}
-                                <div className="space-y-2">
+                                <div role="group" aria-label={messages.publications.type} data-academic="filter-type" className="space-y-2">
                                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300 flex items-center">
                                         <BookOpenIcon className="h-4 w-4 mr-1" /> {messages.publications.type}
                                     </label>
                                     <div className="flex flex-wrap gap-2">
                                         <button
+                                            aria-pressed={selectedType === 'all'}
                                             onClick={() => setSelectedType('all')}
                                             className={cn(
                                                 "px-3 py-1 text-xs rounded-full transition-colors",
@@ -165,6 +179,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         {types.map(type => (
                                             <button
                                                 key={type}
+                                                aria-pressed={selectedType === type}
                                                 onClick={() => setSelectedType(type)}
                                                 className={cn(
                                                     "px-3 py-1 text-xs rounded-full capitalize transition-colors",
@@ -185,7 +200,7 @@ export default function PublicationsList({ config, publications, embedded = fals
             </div>
 
             {/* Publications Grid */}
-            <div className="space-y-6">
+            <div data-academic="research-list" className="space-y-6">
                 {filteredPublications.length === 0 ? (
                     <div className="text-center py-12 text-neutral-500">
                         {messages.publications.noResults}
@@ -194,14 +209,15 @@ export default function PublicationsList({ config, publications, embedded = fals
                     filteredPublications.map((pub, index) => (
                         <motion.div
                             key={pub.id}
-                            initial={{ opacity: 0, y: 20 }}
+                            data-academic="research-paper"
+                            initial={editorial ? false : { opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.1 * index }}
                             className="bg-white dark:bg-neutral-900 p-6 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-800 hover:shadow-md transition-all duration-200"
                         >
                             <div className="flex flex-col md:flex-row gap-6">
                                 {pub.preview && (
-                                    <div className="w-full md:w-48 flex-shrink-0">
+                                    <div data-academic="paper-figure" className="w-full md:w-48 flex-shrink-0">
                                         <div className="aspect-video md:aspect-[4/3] relative rounded-lg overflow-hidden bg-neutral-100 dark:bg-neutral-800">
                                             <Image
                                                 src={`/papers/${pub.preview}`}
@@ -213,7 +229,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         </div>
                                     </div>
                                 )}
-                                <div className="flex-grow">
+                                <div data-academic="paper-text" className="flex-grow">
                                     <h3 className={`${embedded ? "text-lg" : "text-xl"} font-semibold text-primary mb-2 leading-tight`}>
                                         <FormattedBibTeXText nodes={pub.titleNodes} fallback={pub.title} />
                                     </h3>
@@ -230,7 +246,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                             </span>
                                         ))}
                                     </p>
-                                    <p className="text-sm font-medium text-neutral-800 dark:text-neutral-600 mb-3">
+                                    <p data-academic="paper-venue" className="text-sm font-medium text-neutral-800 dark:text-neutral-600 mb-3">
                                         {pub.journal || pub.conference} {pub.year}
                                     </p>
 
@@ -240,7 +256,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         </p>
                                     )}
 
-                                    <div className="flex flex-wrap gap-2 mt-auto">
+                                    <div data-academic="paper-actions" className="flex flex-wrap gap-2 mt-auto">
                                         {pub.doi && (
                                             <a
                                                 href={`https://doi.org/${pub.doi}`}
@@ -263,6 +279,8 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         )}
                                         {pub.abstract && (
                                             <button
+                                                aria-expanded={expandedAbstractId === pub.id}
+                                                aria-controls={`${controlsId}-abstract-${pub.id}`}
                                                 onClick={() => setExpandedAbstractId(expandedAbstractId === pub.id ? null : pub.id)}
                                                 className={cn(
                                                     "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium transition-colors",
@@ -277,6 +295,8 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         )}
                                         {pub.bibtex && (
                                             <button
+                                                aria-expanded={expandedBibtexId === pub.id}
+                                                aria-controls={`${controlsId}-bibtex-${pub.id}`}
                                                 onClick={() => setExpandedBibtexId(expandedBibtexId === pub.id ? null : pub.id)}
                                                 className={cn(
                                                     "inline-flex items-center px-3 py-1 rounded-md text-xs font-medium transition-colors",
@@ -295,7 +315,10 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         {expandedAbstractId === pub.id && pub.abstract ? (
                                             <motion.div
                                                 key="abstract"
-                                                initial={{ opacity: 0, height: 0 }}
+                                                id={`${controlsId}-abstract-${pub.id}`}
+                                                data-academic="abstract"
+                                                initial={editorial && reducedMotion ? false : { opacity: 0, height: 0 }}
+                                                transition={panelTransition}
                                                 animate={{ opacity: 1, height: 'auto' }}
                                                 exit={{ opacity: 0, height: 0 }}
                                                 className="overflow-hidden mt-4"
@@ -310,7 +333,10 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         {expandedBibtexId === pub.id && pub.bibtex ? (
                                             <motion.div
                                                 key="bibtex"
-                                                initial={{ opacity: 0, height: 0 }}
+                                                id={`${controlsId}-bibtex-${pub.id}`}
+                                                data-academic="bibtex"
+                                                initial={editorial && reducedMotion ? false : { opacity: 0, height: 0 }}
+                                                transition={panelTransition}
                                                 animate={{ opacity: 1, height: 'auto' }}
                                                 exit={{ opacity: 0, height: 0 }}
                                                 className="overflow-hidden mt-4"
@@ -320,6 +346,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                                         {pub.bibtex}
                                                     </pre>
                                                     <button
+                                                        data-academic="bibtex-copy"
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(pub.bibtex || '');
                                                             // Optional: Show copied feedback
