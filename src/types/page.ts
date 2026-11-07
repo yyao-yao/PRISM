@@ -7,6 +7,16 @@ export interface BasePageConfig {
 export interface PublicationPageConfig extends BasePageConfig {
     type: 'publication';
     source: string;
+    research?: {
+        publications_title: string;
+        categories: Array<{ id: string; title: string }>;
+        citations: Array<{ id: string; text: string }>;
+        sections: Array<{
+            id: string;
+            title: string;
+            items: Array<{ title: string; author?: string; details: string; recognition?: string }>;
+        }>;
+    };
 }
 
 export interface TextPageConfig extends BasePageConfig {

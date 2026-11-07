@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo, useId } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { Fragment, useState, useMemo, useId } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import {
@@ -26,6 +27,7 @@ interface PublicationsListProps {
 
 export default function PublicationsList({ config, publications, embedded = false, editorial = false }: PublicationsListProps) {
     const messages = useMessages();
+    const research = config.research;
     const controlsId = useId();
     const reducedMotion = useReducedMotion();
     const panelTransition = editorial ? { duration: reducedMotion ? 0 : 0.22 } : undefined;
@@ -49,7 +51,7 @@ export default function PublicationsList({ config, publications, embedded = fals
 
     // Filter publications
     const filteredPublications = useMemo(() => {
-        return publications.filter(pub => {
+        const matches = publications.filter(pub => {
             const matchesSearch =
                 pub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 pub.authors.some(author => author.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
@@ -61,7 +63,10 @@ export default function PublicationsList({ config, publications, embedded = fals
 
             return matchesSearch && matchesYear && matchesType;
         });
-    }, [publications, searchQuery, selectedYear, selectedType]);
+        if (!research) return matches;
+        return research.categories.flatMap(category =>
+            matches.filter(pub => pub.category === category.id).sort((a, b) => b.year - a.year));
+    }, [publications, searchQuery, selectedYear, selectedType, research]);
 
     return (
         <motion.div
@@ -199,6 +204,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                 </AnimatePresence>
             </div>
 
+            {research && <h2 className="text-2xl font-serif font-bold text-primary mb-6">{research.publications_title}</h2>}
             {/* Publications Grid */}
             <div data-academic="research-list" className="space-y-6">
                 {filteredPublications.length === 0 ? (
@@ -207,8 +213,13 @@ export default function PublicationsList({ config, publications, embedded = fals
                     </div>
                 ) : (
                     filteredPublications.map((pub, index) => (
+                        <Fragment key={pub.id}>
+                        {research && (index === 0 || pub.category !== filteredPublications[index - 1].category) && (
+                            <h3 className="text-xl font-serif font-semibold text-primary pt-8 pb-4">
+                                {research.categories.find(category => category.id === pub.category)?.title}
+                            </h3>
+                        )}
                         <motion.div
-                            key={pub.id}
                             data-academic="research-paper"
                             initial={editorial ? false : { opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
@@ -230,6 +241,11 @@ export default function PublicationsList({ config, publications, embedded = fals
                                     </div>
                                 )}
                                 <div data-academic="paper-text" className="flex-grow">
+                                    {research ? (
+                                        <div data-research-citation={pub.id} className="text-base leading-relaxed text-primary">
+                                            <ReactMarkdown>{research.citations.find(citation => citation.id === pub.id)?.text || pub.title}</ReactMarkdown>
+                                        </div>
+                                    ) : <>
                                     <h3 className={`${embedded ? "text-lg" : "text-xl"} font-semibold text-primary mb-2 leading-tight`}>
                                         <FormattedBibTeXText nodes={pub.titleNodes} fallback={pub.title} />
                                     </h3>
@@ -250,6 +266,7 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         {pub.journal || pub.conference} {pub.year}
                                     </p>
 
+                                    </>}
                                     {pub.description && (
                                         <p className="text-sm text-neutral-600 dark:text-neutral-500 mb-4 line-clamp-3">
                                             {pub.description}
@@ -363,9 +380,27 @@ export default function PublicationsList({ config, publications, embedded = fals
                                 </div>
                             </div>
                         </motion.div>
+                        </Fragment>
                     ))
                 )}
             </div>
+            {research?.sections.map(section => (
+                <section key={section.id} aria-labelledby={section.id} className="mt-12">
+                    <h2 id={section.id} className="text-2xl font-serif font-bold text-primary mb-6">{section.title}</h2>
+                    <div data-academic="research-list">
+                        {section.items.map(item => (
+                            <article key={item.title} data-academic="research-paper">
+                                <div data-academic="paper-text">
+                                    <h3 className="font-semibold text-primary">{item.title}</h3>
+                                    {item.author && <p>{item.author}</p>}
+                                    <p>{item.details}</p>
+                                    {item.recognition && <p><strong>{item.recognition}</strong></p>}
+                                </div>
+                            </article>
+                        ))}
+                    </div>
+                </section>
+            ))}
         </motion.div>
     );
 }

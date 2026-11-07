@@ -17,6 +17,7 @@ export type BibTeXInlineNode =
   };
 
 export interface Publication {
+  category?: string;
   id: string;
   title: string;
   titleNodes?: BibTeXInlineNode[];

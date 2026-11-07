@@ -1,4 +1,66 @@
 type = "publication"
-title = "Publications"
-description = "A collection of my research work."
+title = "Research"
 source = "publications.bib"
+
+[research]
+publications_title = "Publications"
+
+[[research.categories]]
+id = "peer-reviewed"
+title = "Peer-Reviewed Publications"
+
+[[research.categories]]
+id = "book-chapters"
+title = "Book Chapters"
+
+[[research.categories]]
+id = "other"
+title = "Other Publications"
+
+[[research.citations]]
+id = "yao2021subsistence"
+text = "**Yao, Yao.** 2021. “Study on Changes in the System of Guaranteeing the Subsistence Right for the Disabled in China (1978–2020).” *Journal of US-China Public Administration* 18(3): 133–139."
+
+[[research.citations]]
+id = "johnson2026curtain"
+text = "**Johnson, Gbemende E., Yao Yao, and Hannah Lee.** 2026. “Peeking Behind the Curtain: The Federal Bureaucracy, Transparency, and Judicial Oversight.” In *Divided Nation: Analyzing Policy, Behavior, and Institutional Challenges in Modern American Democracy*, edited by Jamie L. Carson and Ryan D. Williamson. De Gruyter."
+
+[[research.citations]]
+id = "yao2022community"
+text = "**Yao, Yao, and Xiaodong Sun.** 2022. “Loyalty or Dependence? Community Formation in Contemporary Urban China: Evidence from H Village in Tangshan.” *Research on Public Complaints and Governance (信访与治理研究)*, 147–153. (In Chinese)"
+
+[[research.citations]]
+id = "yao2021eucalyptus"
+text = "**Yao, Yao, Luyang Li, and Xiao Song.** 2021. “Green Mountains or Mountains of Gold? The Eucalyptus Industry and the Challenges of Environmental Governance.” *Public Policy Review (公共政策评论)*, 196–211. (In Chinese)"
+
+[[research.citations]]
+id = "johnson2024judicial"
+text = "**Johnson, Gbemende E., and Yao Yao.** 2024. “The Judicial System of the USA.” In *The USA and Canada 2025*, 27th edition, edited by Dominic Heaney. London: Routledge."
+
+[[research.citations]]
+id = "johnson2023judicial"
+text = "**Johnson, Gbemende E., Sidney Shank, and Yao Yao.** 2023. “The Judicial System of the USA.” In *The USA and Canada 2024*, 26th edition, edited by Dominic Heaney. London: Routledge."
+
+[[research.sections]]
+id = "working-papers"
+title = "Working Papers"
+[[research.sections.items]]
+title = "What Reaches the Ballot? Positions, Policy Outcomes, and Partisanship in Electoral Accountability"
+author = "Yao Yao"
+details = "Solo-authored."
+
+[[research.sections]]
+id = "work-in-progress"
+title = "Work in Progress"
+[[research.sections.items]]
+title = "Beyond Institutional Constraint: Political Capital and Strategic Unilateralism"
+author = "Yao Yao"
+details = "Solo-authored."
+
+[[research.sections]]
+id = "research-honors"
+title = "Research Honors"
+[[research.sections.items]]
+title = "Labor Dispute Resolution Mechanisms During the COVID-19 Pandemic"
+details = "LL.B. Thesis · China University of Political Science and Law · 2021"
+recognition = "Best Undergraduate Thesis Award, Beijing Municipal Education Commission"

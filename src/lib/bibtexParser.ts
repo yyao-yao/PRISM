@@ -66,6 +66,7 @@ export function parseBibTeX(bibtexContent: string, locale?: string): Publication
 
     // Create publication object
     const publication: Publication = {
+      category: tags.category,
       id: entry.citationKey || tags.id || `pub-${Date.now()}-${index}`,
       title: title.plainText || 'Untitled',
       titleNodes: title.nodes,
@@ -93,7 +94,7 @@ export function parseBibTeX(bibtexContent: string, locale?: string): Publication
       preview,
 
       // Store original BibTeX (excluding custom fields)
-      bibtex: reconstructBibTeX(entry, ['selected', 'preview', 'description', 'keywords', 'code']),
+      bibtex: reconstructBibTeX(entry, ['selected', 'preview', 'description', 'keywords', 'code', 'category']),
     };
 
     // Clean up undefined fields
