@@ -13,6 +13,7 @@ import { MapPinIcon as MapPinSolidIcon, EnvelopeIcon as EnvelopeSolidIcon } from
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid';
 import { Github, Linkedin, Pin } from 'lucide-react';
 import type { SiteConfig } from '@/lib/config';
+import { useLocaleStore } from '@/lib/stores/localeStore';
 import { useMessages } from '@/lib/i18n/useMessages';
 
 // Custom ORCID icon component
@@ -28,14 +29,16 @@ const OrcidIcon = ({ className }: { className?: string }) => (
 );
 
 interface ProfileProps {
+    cvAvailable: boolean;
     author: SiteConfig['author'];
     social: SiteConfig['social'];
     features: SiteConfig['features'];
     researchInterests?: string[];
 }
 
-export default function Profile({ author, social, features, researchInterests }: ProfileProps) {
+export default function Profile({ cvAvailable, author, social, features, researchInterests }: ProfileProps) {
     const messages = useMessages();
+    const isChinese = useLocaleStore(state => state.locale).startsWith('zh');
 
     const [hasLiked, setHasLiked] = useState(false);
     const [showThanks, setShowThanks] = useState(false);
@@ -132,6 +135,17 @@ export default function Profile({ author, social, features, researchInterests }:
                 <p className="text-neutral-600 mb-2">
                     {author.institution}
                 </p>
+                <a
+                    data-about-cv
+                    href={cvAvailable ? '/cv.pdf' : undefined}
+                    download={cvAvailable ? 'Yao-Yao-CV.pdf' : undefined}
+                    role={cvAvailable ? undefined : 'link'}
+                    aria-disabled={cvAvailable ? undefined : true}
+                    title={cvAvailable ? undefined : (isChinese ? '简历 PDF 待上传' : 'CV PDF pending upload')}
+                    className="inline-block mt-4 text-sm text-accent underline underline-offset-4"
+                >
+                    {isChinese ? '下载简历' : 'Download CV'}
+                </a>
             </div>
 
             {/* Contact Links */}

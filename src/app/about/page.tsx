@@ -1,3 +1,4 @@
+import { hasOfficialCv } from '@/lib/cv';
 import { getConfig } from '@/lib/config';
 import { getMarkdownContent, getBibtexContent, getPageConfig } from '@/lib/content';
 import { parseBibTeX } from '@/lib/bibtexParser';
@@ -115,6 +116,7 @@ function loadPageDataForLocale(locale: string | undefined): HomePageLocaleData {
   }
 
   return {
+    cvAvailable: hasOfficialCv(),
     author: localeConfig.author,
     social: localeConfig.social,
     features: localeConfig.features,

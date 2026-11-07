@@ -29,6 +29,7 @@ type PageData =
   | { type: 'card'; id: string; config: CardPageConfig };
 
 export interface HomePageLocaleData {
+  cvAvailable: boolean;
   author: SiteConfig['author'];
   social: SiteConfig['social'];
   features: SiteConfig['features'];
@@ -56,6 +57,7 @@ export default function HomePageClient({ dataByLocale, defaultLocale }: HomePage
       <div data-academic="columns" className="grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-1">
           <Profile
+            cvAvailable={data.cvAvailable}
             author={data.author}
             social={data.social}
             features={data.features}

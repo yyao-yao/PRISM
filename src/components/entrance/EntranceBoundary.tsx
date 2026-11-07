@@ -15,8 +15,8 @@ export default function EntranceBoundary({ children, navigation, footer }: {
   const isAcademic = ['/about', '/publications', '/teaching', '/cv', '/photography'].includes(pathname.replace(/\/$/, ''));
   const chrome = <>
     {navigation}
-    <main key={pathname} tabIndex={-1} className="min-h-screen pt-16 lg:pt-20">{children}</main>
+    <main key={pathname} tabIndex={-1} className="flex-1 pt-16 lg:pt-20">{children}</main>
     {footer}
   </>;
-  return isAcademic ? <div className={styles.academic}>{chrome}</div> : chrome;
+  return <div className={`${isAcademic ? styles.academic : ''} min-h-screen flex flex-col`}>{chrome}</div>;
 }
