@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import TeachingPage from './TeachingPage';
 import { CardPageConfig } from '@/types/page';
 
 const markdownComponents = {
@@ -30,6 +31,8 @@ const markdownComponents = {
 };
 
 export default function CardPage({ config, embedded = false, editorial = false }: { config: CardPageConfig; embedded?: boolean; editorial?: boolean }) {
+    if (config.teaching) return <TeachingPage config={config} />;
+
     return (
         <motion.div
             data-academic="courses"

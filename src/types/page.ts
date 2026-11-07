@@ -37,4 +37,19 @@ export interface CardItem {
 export interface CardPageConfig extends BasePageConfig {
     type: 'card';
     items: CardItem[];
+    teaching?: Array<{
+        id: string;
+        title: string;
+        items: Array<{
+            title: string;
+            institution: string;
+            role: string;
+            semester: string;
+            level?: string;
+            recognition?: string;
+            recognition_institution?: string;
+            courses_label?: string;
+            courses?: string[];
+        }>;
+    }>;
 }

@@ -1,10 +1,35 @@
 type = "card"
 title = "Teaching"
-description = "Courses I have taught or assisted with."
+items = []
 
-[[items]]
-title = "Example Course"
-subtitle = "Teaching Assistant"
-date = "2024"
-content = "Description of the course and responsibilities. Content of this course can be found [here](https://example.com)."
-tags = ["Undergraduate", "CS"]
+[[teaching]]
+id = "instructor-of-record"
+title = "Instructor of Record"
+
+[[teaching.items]]
+title = "POLS 1101: Introduction to American Government"
+institution = "University of Georgia"
+role = "Instructor of Record"
+semester = "Fall 2026"
+level = "Undergraduate Course"
+
+[[teaching]]
+id = "teaching-assistant"
+title = "Teaching Assistant"
+
+[[teaching.items]]
+title = "POLS 1101: Introduction to American Government"
+institution = "University of Georgia"
+role = "Teaching Assistant"
+semester = "Fall 2025, Spring 2026"
+level = "Undergraduate Course"
+recognition = "2026 Outstanding Senior Level Teaching Assistant Award"
+recognition_institution = "University of Georgia"
+
+[[teaching.items]]
+title = "GEC Academy"
+institution = "GEC Academy"
+role = "Teaching Assistant"
+semester = "Spring 2021 – Fall 2023"
+courses_label = "Courses supported"
+courses = ["Political Theory in Global Perspective", "Politics, Markets and States in the Global South", "International Law and the Use of Force", "Multinational Enterprises and the Law", "Sociology and the Study of Culture", "Business Negotiation"]
