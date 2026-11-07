@@ -1,6 +1,7 @@
 'use client';
 
 import ReactMarkdown from 'react-markdown';
+import AcademicEntryText from './AcademicEntryText';
 import { Fragment, useState, useMemo, useId } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
@@ -85,7 +86,7 @@ export default function PublicationsList({ config, publications, embedded = fals
             </div>
 
             {/* Search and Filter Controls */}
-            <div data-academic="research-controls" className="mb-8 space-y-4">
+            {!research && <div data-academic="research-controls" className="mb-8 space-y-4">
                 {/* ... (keep existing controls) ... */}
                 <div className="flex flex-col sm:flex-row gap-4">
                     <div className="relative flex-grow">
@@ -204,9 +205,10 @@ export default function PublicationsList({ config, publications, embedded = fals
                 </AnimatePresence>
             </div>
 
+            }
             {research && <h2 className="text-2xl font-serif font-bold text-primary mb-6">{research.publications_title}</h2>}
             {/* Publications Grid */}
-            <div data-academic="research-list" className="space-y-6">
+            <div data-academic={research ? 'papers' : 'research-list'} className={research ? undefined : 'space-y-6'}>
                 {filteredPublications.length === 0 ? (
                     <div className="text-center py-12 text-neutral-500">
                         {messages.publications.noResults}
@@ -215,12 +217,12 @@ export default function PublicationsList({ config, publications, embedded = fals
                     filteredPublications.map((pub, index) => (
                         <Fragment key={pub.id}>
                         {research && (index === 0 || pub.category !== filteredPublications[index - 1].category) && (
-                            <h3 className="text-xl font-serif font-semibold text-primary pt-8 pb-4">
+                            <h3 className="text-sm font-mono font-medium text-neutral-600 pt-6">
                                 {research.categories.find(category => category.id === pub.category)?.title}
                             </h3>
                         )}
                         <motion.div
-                            data-academic="research-paper"
+                            data-academic={research ? 'paper' : 'research-paper'}
                             initial={editorial ? false : { opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 0.4, delay: 0.1 * index }}
@@ -240,10 +242,21 @@ export default function PublicationsList({ config, publications, embedded = fals
                                         </div>
                                     </div>
                                 )}
-                                <div data-academic="paper-text" className="flex-grow">
+                                <div data-academic={research ? undefined : 'paper-text'} className="flex-grow">
                                     {research ? (
-                                        <div data-research-citation={pub.id} className="text-base leading-relaxed text-primary">
-                                            <ReactMarkdown>{research.citations.find(citation => citation.id === pub.id)?.text || pub.title}</ReactMarkdown>
+                                        <div data-research-citation={pub.id}>
+                                            <AcademicEntryText
+                                                title={<FormattedBibTeXText nodes={pub.titleNodes} fallback={pub.title} />}
+                                                authors={pub.authors.map((author, idx) => (
+                                                    <span key={idx}>
+                                                        <span className={author.isHighlighted ? 'font-semibold text-accent' : undefined}>{author.name}</span>
+                                                        {idx < pub.authors.length - 1 && ', '}
+                                                    </span>
+                                                ))}
+                                                supporting={<>{pub.year} · <ReactMarkdown components={{ p: ({ children }) => <>{children}</> }}>
+                                                    {research.citations.find(citation => citation.id === pub.id)?.text.split('”').slice(1).join('”').trim() || pub.journal || pub.conference || ''}
+                                                </ReactMarkdown></>}
+                                            />
                                         </div>
                                     ) : <>
                                     <h3 className={`${embedded ? "text-lg" : "text-xl"} font-semibold text-primary mb-2 leading-tight`}>
@@ -385,17 +398,13 @@ export default function PublicationsList({ config, publications, embedded = fals
                 )}
             </div>
             {research?.sections.map(section => (
-                <section key={section.id} aria-labelledby={section.id} className="mt-12">
+                <section key={section.id} data-academic="section" aria-labelledby={section.id} className="mt-10">
                     <h2 id={section.id} className="text-2xl font-serif font-bold text-primary mb-6">{section.title}</h2>
-                    <div data-academic="research-list">
+                    <div data-academic="papers">
                         {section.items.map(item => (
-                            <article key={item.title} data-academic="research-paper">
-                                <div data-academic="paper-text">
-                                    <h3 className="font-semibold text-primary">{item.title}</h3>
-                                    {item.author && <p>{item.author}</p>}
-                                    <p>{item.details}</p>
-                                    {item.recognition && <p><strong>{item.recognition}</strong></p>}
-                                </div>
+                            <article key={item.title} data-academic="paper">
+                                <AcademicEntryText title={item.title} authors={item.author}
+                                    supporting={<>{item.details}{item.recognition && <><br />{item.recognition}</>}</>} />
                             </article>
                         ))}
                     </div>

@@ -169,7 +169,8 @@
 }
 .academic :global([data-academic='paper'] h3) { font-size: 17px; line-height: 1.5; margin-bottom: 10px; letter-spacing: -.012em; }
 .academic :global([data-academic='paper'] p) { color: var(--secondary); line-height: 1.7; }
-.academic :global([data-academic='paper'] p:nth-of-type(2)) { font-size: 12px; font-family: var(--font-metadata); margin: 8px 0; }
+.academic :global([data-academic='paper'] p:nth-of-type(2)),
+.academic :global([data-academic='paper'] [data-entry-support]) { font-size: 12px; font-family: var(--font-metadata); margin: 8px 0; }
 .academic :global([data-academic='news']) { border-top: 1px solid var(--rule); }
 .academic :global([data-academic='news'] > div) { margin: 0; padding: 18px 0; border-bottom: 1px solid var(--rule); gap: 20px; }
 .academic :global([data-academic='news'] span) { width: 72px; margin: 2px 0 0; color: var(--secondary); font-family: var(--font-metadata); font-size: 12px; }
