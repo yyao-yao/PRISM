@@ -33,14 +33,13 @@ function PublicationDetails({ publication: p }: { publication: Publication }) {
 function MaterialControls({ paper, abstract, pending, zh }: { paper?: string; abstract?: string; pending: boolean; zh: boolean }) {
     const [open, setOpen] = useState(false);
     const id = useId();
+    if (!(pending && paper) && !abstract) return null;
     return <>
         <div className={styles.controls}>
-            {pending && (paper ? <a href={paper} target="_blank" rel="noopener noreferrer"><DocumentTextIcon />{zh ? '论文' : 'Paper'}</a>
-                : <button disabled title={zh ? '尚未提供论文文件' : 'Paper URL or PDF not supplied'}><DocumentTextIcon />{zh ? '论文' : 'Paper'}</button>)}
-            <button disabled={!abstract} aria-expanded={abstract ? open : undefined} aria-controls={abstract ? id : undefined}
-                title={!abstract ? (zh ? '尚未提供摘要' : 'Abstract not supplied') : undefined} onClick={() => setOpen(!open)}>
+            {pending && paper && <a href={paper} target="_blank" rel="noopener noreferrer"><DocumentTextIcon />{zh ? '论文' : 'Paper'}</a>}
+            {abstract && <button aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}>
                 <BookOpenIcon />{zh ? '摘要' : 'Abstract'}
-            </button>
+            </button>}
         </div>
         {abstract && open && <div id={id} className={styles.abstract}><p>{abstract}</p></div>}
     </>;
