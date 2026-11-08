@@ -66,23 +66,27 @@ export default function ResearchPage({ config, publications }: { config: Publica
         <h1 className={styles.title}>{config.title}</h1>
         {research.categories.map(category => <section key={category.id} className={styles.section} aria-labelledby={`research-${category.id}`}>
             <h2 id={`research-${category.id}`}>{category.title}</h2>
-            <ul className={styles.list}>
-                {publications.filter(p => p.category === category.id).sort((a, b) => b.year - a.year).map(p => <li key={p.id} className={styles.entry} data-publication={p.id}>
-                    <CitationAuthors authors={p.authors} />. {p.year}. “{p.doi
+            <div className={styles.entries}>
+                {publications.filter(p => p.category === category.id).sort((a, b) => b.year - a.year).map(p => <article key={p.id} className={styles.entry} data-publication={p.id}>
+                    <h3>{p.doi
                         ? <a className={styles.publicationLink} href={`https://doi.org/${p.doi}`} target="_blank" rel="noopener noreferrer"><FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} /></a>
-                        : <FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} />}.” <PublicationDetails publication={p} />
-                </li>)}
-            </ul>
+                        : <FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} />}</h3>
+                    <p data-publication-authors><CitationAuthors authors={p.authors} />. {p.year}.</p>
+                    <p data-publication-details><PublicationDetails publication={p} /></p>
+                </article>)}
+            </div>
         </section>)}
         {research.sections.map(section => <section key={section.id} className={styles.section} aria-labelledby={section.id}>
             <h2 id={section.id}>{section.title}</h2>
-            <ul className={styles.list}>
-                {section.items.map(item => <li key={item.title} className={styles.entry}>
-                    {section.id === 'research-honors'
-                        ? <>“{item.title}.” {item.details.replace(/ · /g, ', ')}.<br />{item.recognition}.</>
-                        : <><CitationAuthors authors={item.author ? [{ name: item.author }] : []} />. “{item.title}.”</>}
-                </li>)}
-            </ul>
+            <div className={styles.entries}>
+                {section.items.map(item => <article key={item.title} className={styles.entry}>
+                    <h3>{item.title}</h3>
+                    {section.id === 'research-honors' && <>
+                        <p>{item.details.replace(/ · /g, ', ')}.</p>
+                        <p>{item.recognition}.</p>
+                    </>}
+                </article>)}
+            </div>
         </section>)}
     </div>;
 }
