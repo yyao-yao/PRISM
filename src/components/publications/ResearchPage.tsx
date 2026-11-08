@@ -2,9 +2,8 @@
 
 import { useId, useState } from 'react';
 import { DocumentTextIcon, BookOpenIcon } from '@heroicons/react/24/outline';
-import type { Publication } from '@/types/publication';
+import type { Author, Publication } from '@/types/publication';
 import type { PublicationPageConfig } from '@/types/page';
-import { useLocaleStore } from '@/lib/stores/localeStore';
 import FormattedBibTeXText from './FormattedBibTeXText';
 import styles from './ResearchPage.module.css';
 
@@ -30,7 +29,7 @@ function PublicationDetails({ publication: p }: { publication: Publication }) {
     </>;
 }
 
-function MaterialControls({ paper, abstract, pending, zh }: { paper?: string; abstract?: string; pending: boolean; zh: boolean }) {
+export function MaterialControls({ paper, abstract, pending, zh }: { paper?: string; abstract?: string; pending: boolean; zh: boolean }) {
     const [open, setOpen] = useState(false);
     const id = useId();
     if (!(pending && paper) && !abstract) return null;
@@ -45,33 +44,45 @@ function MaterialControls({ paper, abstract, pending, zh }: { paper?: string; ab
     </>;
 }
 
+function citationName(name: string, first: boolean) {
+    if (!first || name.includes(',')) return name;
+    const parts = name.trim().split(/\s+/);
+    return parts.length > 1 ? `${parts.at(-1)}, ${parts.slice(0, -1).join(' ')}` : name;
+}
+
+function CitationAuthors({ authors }: { authors: Author[] }) {
+    return <>{authors.map((author, index) => <span key={index}>
+        {index > 0 && (index === authors.length - 1 ? ', and ' : ', ')}
+        <span data-citation-author className={author.name.replace(/[,\s]/g, '').toLowerCase() === 'yaoyao' ? styles.owner : undefined}>
+            {citationName(author.name, index === 0)}
+        </span>
+    </span>)}</>;
+}
+
 export default function ResearchPage({ config, publications }: { config: PublicationPageConfig; publications: Publication[] }) {
-    const zh = useLocaleStore(state => state.locale).startsWith('zh');
     const research = config.research;
     if (!research) return null;
     return <div className={styles.page} data-research-page>
         <h1 className={styles.title}>{config.title}</h1>
         {research.categories.map(category => <section key={category.id} className={styles.section} aria-labelledby={`research-${category.id}`}>
             <h2 id={`research-${category.id}`}>{category.title}</h2>
-            {publications.filter(p => p.category === category.id).sort((a, b) => b.year - a.year).map(p => <article key={p.id} className={styles.entry} data-publication={p.id}>
-                <h3><FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} /></h3>
-                <p data-bibliography>
-                    {p.authors.map((author, index) => <span key={index}>
-                        {index > 0 && (index === p.authors.length - 1 ? (p.authors.length === 2 ? ' and ' : ', and ') : ', ')}
-                        <span className={author.name === 'Yao Yao' ? styles.owner : undefined}>{author.name}</span>
-                    </span>)}. {p.year}. <PublicationDetails publication={p} />
-                    {p.doi && <> <a className={styles.doi} href={`https://doi.org/${p.doi}`} target="_blank" rel="noopener noreferrer">DOI</a></>}
-                </p>
-                {category.id === 'peer-reviewed' && <MaterialControls paper={p.pdfUrl || p.url} abstract={p.abstract} pending zh={zh} />}
-            </article>)}
+            <ul className={styles.list}>
+                {publications.filter(p => p.category === category.id).sort((a, b) => b.year - a.year).map(p => <li key={p.id} className={styles.entry} data-publication={p.id}>
+                    <CitationAuthors authors={p.authors} />. {p.year}. “{p.doi
+                        ? <a className={styles.publicationLink} href={`https://doi.org/${p.doi}`} target="_blank" rel="noopener noreferrer"><FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} /></a>
+                        : <FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} />}.” <PublicationDetails publication={p} />
+                </li>)}
+            </ul>
         </section>)}
         {research.sections.map(section => <section key={section.id} className={styles.section} aria-labelledby={section.id}>
             <h2 id={section.id}>{section.title}</h2>
-            {section.items.map(item => <article key={item.title} className={styles.entry}>
-                <h3>{item.title}</h3>
-                {section.id === 'research-honors' && <p>{item.details}. {item.recognition}.</p>}
-                {section.id === 'working-papers' && <MaterialControls pending={false} zh={zh} />}
-            </article>)}
+            <ul className={styles.list}>
+                {section.items.map(item => <li key={item.title} className={styles.entry}>
+                    {section.id === 'research-honors'
+                        ? <>“{item.title}.” {item.details.replace(/ · /g, ', ')}.<br />{item.recognition}.</>
+                        : <><CitationAuthors authors={item.author ? [{ name: item.author }] : []} />. “{item.title}.”</>}
+                </li>)}
+            </ul>
         </section>)}
     </div>;
 }
