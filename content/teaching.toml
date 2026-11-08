@@ -1,10 +1,11 @@
 type = "card"
 title = "Teaching"
+description = "Teaching Experience"
 items = []
 
 [[teaching]]
 id = "instructor-of-record"
-title = "Instructor of Record"
+title = "Instructor"
 
 [[teaching.items]]
 title = "POLS 1101: Introduction to American Government"
@@ -21,7 +22,7 @@ title = "Teaching Assistant"
 title = "POLS 1101: Introduction to American Government"
 institution = "University of Georgia"
 role = "Teaching Assistant"
-semester = "Fall 2025, Spring 2026"
+semester = "Fall 2025 – Spring 2026"
 level = "Undergraduate Course"
 recognition = "2026 Outstanding Senior Level Teaching Assistant Award"
 recognition_institution = "University of Georgia"
@@ -31,5 +32,5 @@ title = "GEC Academy"
 institution = "GEC Academy"
 role = "Teaching Assistant"
 semester = "Spring 2021 – Fall 2023"
-courses_label = "Courses supported"
+courses_label = "Courses (Undergraduate)"
 courses = ["Political Theory in Global Perspective", "Politics, Markets and States in the Global South", "International Law and the Use of Force", "Multinational Enterprises and the Law", "Sociology and the Study of Culture", "Business Negotiation"]

@@ -1,5 +1,6 @@
 type = "card"
 title = "教学"
+description = "教学经历"
 items = []
 
 [[teaching]]
@@ -21,7 +22,7 @@ title = "教学助理"
 title = "POLS 1101: Introduction to American Government"
 institution = "University of Georgia"
 role = "教学助理"
-semester = "Fall 2025, Spring 2026"
+semester = "Fall 2025 – Spring 2026"
 level = "本科课程"
 recognition = "2026 Outstanding Senior Level Teaching Assistant Award"
 recognition_institution = "University of Georgia"
@@ -31,5 +32,5 @@ title = "GEC Academy"
 institution = "GEC Academy"
 role = "教学助理"
 semester = "Spring 2021 – Fall 2023"
-courses_label = "协助课程"
+courses_label = "课程（本科）"
 courses = ["Political Theory in Global Perspective", "Politics, Markets and States in the Global South", "International Law and the Use of Force", "Multinational Enterprises and the Law", "Sociology and the Study of Culture", "Business Negotiation"]
