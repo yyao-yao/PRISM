@@ -4,7 +4,7 @@ export const PRIMARY_NAVIGATION = [
   { id: 'about', title: 'About', href: '/about/' },
   { id: 'research', title: 'Research', href: '/publications/' },
   { id: 'teaching', title: 'Teaching', href: '/teaching/' },
-  { id: 'cv', title: 'CV', href: '/cv.pdf' },
+  { id: 'cv', title: 'CV', href: '/cv/' },
   { id: 'photography', title: 'Photography', href: '/photography/' },
 ] as const;
 
