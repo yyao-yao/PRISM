@@ -23,11 +23,11 @@ function editionLabel(edition: string) {
 /** Uses structured BibTeX fields; formatted citation strings are never parsed. */
 function PublicationDetails({ publication: p }: { publication: Publication }) {
     const pages = p.pages?.replace(/--/g, '–');
-    return <p>
+    return <>
         {p.journal ? <><em>{p.journal}</em>{p.volume && ` ${p.volume}`}{p.issue && `(${p.issue})`}{pages && `: ${pages}`}.</>
             : <>{p.editors?.length ? 'In ' : ''}<em>{p.conference}</em>{p.edition && `, ${editionLabel(p.edition)}`}{p.editors?.length ? `, edited by ${editorNames(p)}.` : ','}{pages && ` ${pages}.`}{p.address && ` ${p.address}:`}{p.publisher && ` ${p.publisher}.`}</>}
         {p.language === 'Chinese' && ' (In Chinese)'}
-    </p>;
+    </>;
 }
 
 function MaterialControls({ paper, abstract, pending, zh }: { paper?: string; abstract?: string; pending: boolean; zh: boolean }) {
@@ -55,9 +55,13 @@ export default function ResearchPage({ config, publications }: { config: Publica
             <h2 id={`research-${category.id}`}>{category.title}</h2>
             {publications.filter(p => p.category === category.id).sort((a, b) => b.year - a.year).map(p => <article key={p.id} className={styles.entry} data-publication={p.id}>
                 <h3><FormattedBibTeXText nodes={p.titleNodes} fallback={p.title} /></h3>
-                <p>{p.authors.map(author => author.name).join(', ')} · {p.year}</p>
-                <PublicationDetails publication={p} />
-                {p.doi && <p className={styles.doi}>doi: <a href={`https://doi.org/${p.doi}`} target="_blank" rel="noopener noreferrer">https://doi.org/{p.doi}</a></p>}
+                <p data-bibliography>
+                    {p.authors.map((author, index) => <span key={index}>
+                        {index > 0 && (index === p.authors.length - 1 ? (p.authors.length === 2 ? ' and ' : ', and ') : ', ')}
+                        <span className={author.name === 'Yao Yao' ? styles.owner : undefined}>{author.name}</span>
+                    </span>)}. {p.year}. <PublicationDetails publication={p} />
+                    {p.doi && <> <a className={styles.doi} href={`https://doi.org/${p.doi}`} target="_blank" rel="noopener noreferrer">DOI</a></>}
+                </p>
                 {category.id === 'peer-reviewed' && <MaterialControls paper={p.pdfUrl || p.url} abstract={p.abstract} pending zh={zh} />}
             </article>)}
         </section>)}
@@ -65,7 +69,7 @@ export default function ResearchPage({ config, publications }: { config: Publica
             <h2 id={section.id}>{section.title}</h2>
             {section.items.map(item => <article key={item.title} className={styles.entry}>
                 <h3>{item.title}</h3>
-                {section.id === 'research-honors' && <><p>{item.details}</p><p>{item.recognition}</p></>}
+                {section.id === 'research-honors' && <p>{item.details}. {item.recognition}.</p>}
                 {section.id === 'working-papers' && <MaterialControls pending={false} zh={zh} />}
             </article>)}
         </section>)}
