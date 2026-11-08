@@ -23,6 +23,11 @@ export interface Publication {
   titleNodes?: BibTeXInlineNode[];
   authors: Author[];
   abstract?: string;
+  editors?: Author[];
+  publisher?: string;
+  address?: string;
+  edition?: string;
+  language?: string;
   journal?: string;
   conference?: string;
   volume?: string;

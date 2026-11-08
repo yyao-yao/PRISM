@@ -80,6 +80,11 @@ export function parseBibTeX(bibtexContent: string, locale?: string): Publication
       researchArea: detectResearchArea(tags.title, keywords),
 
       // Optional fields
+      editors: tags.editor ? parseAuthors(tags.editor, []) : undefined,
+      publisher: tags.publisher,
+      address: tags.address,
+      edition: tags.edition,
+      language: tags.language,
       journal: cleanBibTeXString(tags.journal),
       conference: cleanBibTeXString(tags.booktitle),
       volume: tags.volume,
